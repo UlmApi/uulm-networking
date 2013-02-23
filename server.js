@@ -1,4 +1,3 @@
-var fs = require('fs');
 var express = require('express');
 var io = require('socket.io');
 
@@ -8,10 +7,6 @@ app.use(express.bodyParser());
 
 var server = require('http').createServer(app);
 io = io.listen(server);
-
-
-
-// parse file stuff
 
 
 io.sockets.on('connection', function (socket) {
