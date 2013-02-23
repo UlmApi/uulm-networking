@@ -10,6 +10,7 @@
  <![endif]-->
 
 <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="AnimatedMarker.js"></script>
 <div id="map"></div>
 
@@ -22,33 +23,58 @@
 
 <script type="text/javascript">
 
-var map = L.map('map').setView([48.42218, 9.95545], 17);
+var config = {
+      tileUrl : 'http://{s}.tile.cloudmade.com/acb0ddb5ad274d148625a1dc9c2c51ae/997/256/{z}/{x}/{y}.png',
+      overlayTileUrl : 'http://{s}.tiles.mapbox.com/v3/intertwine.nyc_bike_overlay/{z}/{x}/{y}.png',
+      tileAttrib : 'Routing powered by <a href="http://opentripplanner.org/">OpenTripPlanner</a>, Map tiles &copy; Development Seed and OpenStreetMap ',
+      initLatLng : new L.LatLng(48.42218, 9.95545), //Uni Ulm
+      initZoom : 18,
+      minZoom : 18,
+      maxZoom : 18
+};
 
-var imageUrl = 'Niveau_2.svg',
-    imageBounds = [[48.42392, 9.95263], [48.42154, 9.95818]];
-map.fitBounds(imageBounds);
+var androidIcon = L.icon({
+      iconUrl: 'android.png',
+      iconSize: [25, 39],
+      iconAnchor: [12, 39],
+      shadowUrl: null
+  });
 
-L.tileLayer('http://{s}.tile.cloudmade.com/acb0ddb5ad274d148625a1dc9c2c51ae/997/256/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-    maxZoom: 20
+
+var map = L.map('map').setView(config.initLatLng, config.initZoom);
+
+var imageUrl = 'Niveau_2.png';
+var imageBounds = [[48.42392, 9.95263], [48.42154, 9.95818]];
+//map.fitBounds(imageBounds);
+
+L.tileLayer(config.tileUrl, {
+    attribution: config.tileAttrib,
+    maxZoom: config.maxZoom
 }).addTo(map);
 
 L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
-//var marker = L.marker([48.42218, 9.95545]).addTo(map);
-//var marker2 = L.marker([48.42211, 9.95540]).addTo(map);
-
-var line = L.polyline([[48.42218, 9.95545],[48.42211, 9.95540],[48.42218, 9.95545]]);
+var line = L.polyline([[48.42218, 9.95545],[48.42218, 9.95545],[48.42248, 9.95930],[48.42248, 9.95545],[48.42218, 9.95545]]);
+line.addTo(map);
 
 
 var animatedMarker = L.animatedMarker(line.getLatLngs(), {
-	distance: 10,
-	interval: 5000,
+	icon: androidIcon,
+	autoStart: false,
+	onEnd: function() {
+        $(this._icon).fadeOut(3000, function(){
+        	map.removeLayer(this);
+        });
+        }
 });
 map.addLayer(animatedMarker);
+
+
 var popup = L.popup();
 
 function onMapClick(e) {
+    
+	animatedMarker.start();
     popup
         .setLatLng(e.latlng)
         .setContent("You clicked the map at " + e.latlng.toString())
