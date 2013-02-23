@@ -7,7 +7,11 @@ var ap_lines = ap_data.split("\n");
 var authlog_data = fs.readFileSync("./data/wlan-client-authlog.anon", "utf-8");
 var authlog_lines = authlog_data.split("\n");
 
-var entities = [];
+var obj = {
+	docs: []
+};
+var cnt = 0;
+var file_cnt = 0;
 
 for (var i in authlog_lines) {
 	var line = authlog_lines[i].split(" ");
@@ -18,6 +22,11 @@ for (var i in authlog_lines) {
 		, uuid : line[4]
 		, ap : ap_label
 	};
+
+	if (line.length < 5) {
+		//console.log(line);
+		continue;
+	}
 
 	var date = line[1];
 	date = date.split(".");
@@ -36,11 +45,17 @@ for (var i in authlog_lines) {
 	// correlate with ap_data
 	entity.desc = getAPDesc(ap_label);
 	entity.weekday = arr[entity.weekday];
-	entities.push(entity);
-	console.log(entity);
+	obj.docs.push(entity);
 
-	break;
+	if ((++cnt % 1000) === 0) {
+		fs.writeFileSync("./parsing/" + (file_cnt++), JSON.stringify(obj),
+		"utf-8");
+		obj.docs = [];
+	}
 }
+
+//console.log(JSON.stringify(obj.docs));
+
 
 function getAPDesc(ap) {
 	for (var i in ap_lines) {
