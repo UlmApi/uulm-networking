@@ -22,6 +22,7 @@ for (var i in authlog_lines) {
 		, ouid : line[3]
 		, uuid : line[4]
 		, ap : ap_label
+		, type : "log_entry"
 	};
 
 	if (line.length < 5) continue;
