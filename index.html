@@ -1,0 +1,64 @@
+<html>
+
+<head></head>
+
+
+<body>
+ <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+ <!--[if lte IE 8]>
+     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+ <![endif]-->
+
+<script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+<script src="AnimatedMarker.js"></script>
+<div id="map"></div>
+
+<style type="text/css">
+
+#map { height: 900px; }
+
+</style>
+
+
+<script type="text/javascript">
+
+var map = L.map('map').setView([48.42218, 9.95545], 17);
+
+var imageUrl = 'Niveau_2.svg',
+    imageBounds = [[48.42392, 9.95263], [48.42154, 9.95818]];
+map.fitBounds(imageBounds);
+
+L.tileLayer('http://{s}.tile.cloudmade.com/acb0ddb5ad274d148625a1dc9c2c51ae/997/256/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+    maxZoom: 20
+}).addTo(map);
+
+L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+//var marker = L.marker([48.42218, 9.95545]).addTo(map);
+//var marker2 = L.marker([48.42211, 9.95540]).addTo(map);
+
+var line = L.polyline([[48.42218, 9.95545],[48.42211, 9.95540],[48.42218, 9.95545]]);
+
+
+var animatedMarker = L.animatedMarker(line.getLatLngs(), {
+	distance: 10,
+	interval: 5000,
+});
+map.addLayer(animatedMarker);
+var popup = L.popup();
+
+function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+}
+
+map.on('click', onMapClick);
+
+</script>
+
+</body>
+
+</html>
