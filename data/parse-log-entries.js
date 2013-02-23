@@ -1,6 +1,5 @@
 var fs = require('fs');
 
-// parse file stuff
 var ap_data = fs.readFileSync("./data/access-points-desc.asc", "utf-8");
 var ap_lines = ap_data.split("\n");
 
