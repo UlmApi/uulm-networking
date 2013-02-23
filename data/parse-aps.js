@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var ap_data = fs.readFileSync("./data/aps", "utf-8");
+var ap_data = fs.readFileSync("./aps", "utf-8");
 var ap_lines = ap_data.split("\n");
 
 var cnt = 0;
