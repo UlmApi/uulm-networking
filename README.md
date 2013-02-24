@@ -35,8 +35,8 @@ e.g. by using [http://localhost:5984/_utils/](http://localhost:5984/_utils/).
 
 ```
 $ cd ./data/
-$ make couch-import
+$ make couchimport
 $ make clean
 ```
 
-You should now have rows in your database.
+You should now have 526359 rows in your database.
