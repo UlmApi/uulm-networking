@@ -14,7 +14,7 @@ for (var i in ap_lines) {
 
 	var entity = {
 		_id : ap_lines[i]
-		, [[0, 0]]
+		, coords : [[0, 0]]
 		, type : "ap"
 	};
 

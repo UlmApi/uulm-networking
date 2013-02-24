@@ -1,7 +1,7 @@
 all: 	couchimport
 
 couchimport:
-	(cd ./couchdb-import && ./bulk-insert.sh > import.log)
+	(cd ./couchdb-import && ./bulk-insert.sh > ./import.log)
 
 clean:
 	rm -r ./couchdb-import/parsing/
