@@ -1,3 +1,8 @@
+# ToDo
+
+ * Geolocations for all Access Points have to be added
+
+
 # Data
 
 Data is stored within two files:
@@ -5,7 +10,7 @@ Data is stored within two files:
 ## ./data/wlan-client-authlog.anon
 
 Contains log data for one week university life. Entries are created
-whenever a WLAN-Client associates with an AP.
+whenever a WLAN-Client associates with an Access Point.
 
 ```
 DATUM          UHRZEIT  OUI      HASHED-MAC                      DNS-AP
