@@ -1,9 +1,9 @@
 var fs = require('fs');
 
-var ap_data = fs.readFileSync("./access-points-desc.asc", "utf-8");
+var ap_data = fs.readFileSync("../access-points-desc.asc", "utf-8");
 var ap_lines = ap_data.split("\n");
 
-var authlog_data = fs.readFileSync("./wlan-client-authlog.anon", "utf-8");
+var authlog_data = fs.readFileSync("../wlan-client-authlog.anon", "utf-8");
 var authlog_lines = authlog_data.split("\n");
 
 var obj = {
