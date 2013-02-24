@@ -1,17 +1,29 @@
-# Readme
-
-Tools for working with access point log data.
-
-
 # Data
 
-`access-points-desc.asc`:
-
+Data is stored within two files:
 
 `wlan-client-authlog.anon`:
 
-`DATUM          UHRZEIT  OUI      HASHED-MAC                      DNS-AP
-Fri 22.02.2013 12:51:32 00:1c:bf YypPd/GX4/nfYmjFsWu6ESmCRD...    n25-3-nord-ap1.rz.uni-ulm.de`
+Contains log data for one week university life. Entries are created
+whenever a WLAN-Client associates with an AP.
+
+`DATUM          UHRZEIT  OUI      HASHED-MAC                      DNS-AP`
+`Fri 22.02.2013 12:51:32 00:1c:bf YypPd/GX4/nfYmjFsWu6ESmCRD...    n25-3-nord-ap1.rz.uni-ulm.de`
 
 
+`access-points-desc.asc`:
 
+Contains a mapping of `DNS-AP` to `DESCRIPTION`. Separated by `\t`.
+
+`DNS-AP	DESCRIPTION`
+`aea-5-ap1.rz.uni-ulm.de	"Albert-Einstein-Allee 5 | Pavillon | Seminarraum"`
+
+
+# Import into CouchDB
+
+Install [CouchDB](http://couchdb.apache.org/) and create a new database `uulm-networking`,
+e.g. by using [http://localhost:5984/_utils/](http://localhost:5984/_utils/).
+
+`$ cd ./data/`
+`$ make couch-import`
+`$ make clean`
