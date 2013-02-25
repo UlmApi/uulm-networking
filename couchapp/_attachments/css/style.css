@@ -232,19 +232,13 @@ html, body, #map {
 .ui-front {
 	z-index: 9999 !important;
 }
-	
-
-#notification h4 {
-	font-size:2.0em;
-	margin: 0px;
-}
 
 #notification {
 	position:absolute;
 	top: 10%;
 	left: 50%;
-	width: 300px;
-	margin-left: -150px;
+	width: 500px;
+	margin-left: -250px;
 	font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;	
 	border-radius: 8px;
 	box-shadow: 0 1px 7px rgba(0, 0, 0, 0.4);
@@ -255,4 +249,22 @@ html, body, #map {
 	
 	position: absolute;
 	z-index: 99;	
+}
+
+#notification #label {
+	font-size:1.8em;
+}
+
+#notification #ap_id {
+	font-size:1.8em;
+}
+
+#notification #ap_desc {
+	font-size: 1.6em;
+}
+
+#notification .status {
+	font-size: 0.6em;
+	float: right;
+	color: #777;
 }
