@@ -238,6 +238,7 @@ html, body, #map {
 	top: 10px;
 	left: 50%;
 	width: 500px;
+	height: 170px;
 	margin-left: -250px;
 	font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;	
 	border-radius: 8px;
@@ -270,9 +271,12 @@ html, body, #map {
 	display: none;
 }
 
-#notification .status #skip {
+#notification #skip {
 	font-size: 0.6em;
-	float: right;
+	position:absolute;
+	right: 10px;
+	bottom: 10px;
+	font-size: 1.0em;
 }
 
 #notification a {

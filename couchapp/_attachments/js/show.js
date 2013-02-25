@@ -10,6 +10,8 @@ var leftCount = 0;
 var i = 0;
 var saved = false;
 
+var db_name = "uulm-aps";
+
 
 $(function() {
 	map = L.map('map', {
@@ -19,27 +21,21 @@ $(function() {
 	map.on('click', onMapClick);
 	L.tileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution}).addTo(map);
 
+	//$.couch.urlPrefix = "http://uulm-networking.iriscouch.com"
 	$.couch.urlPrefix = "http://localhost:5984";
 	fetchNext();
 }, false);
 
 
 function fetchNext() {
-	$.couch.db("uulm-networking").view("couchapp/aps", {
+	$.couch.db(db_name).view("couchapp/aps", {
+		descending: true,
 		success: function(data) {
-			// count how many aps with zero entries are left
-			/*
-			leftCount = 0;
-			for (var i in data.rows) {
-				console.log(data.rows[i])
-				if (data.rows[i].coords.length === 0)
-					leftCount++;
-			}
-			*/
+			all_aps = data.rows;
+			console.log(all_aps);
 
-			all_aps = data;
-			i = 0;
-			displayAP(all_aps.rows[i]);
+			// if skipping until end, start fresh
+			displayAP(all_aps[i % all_aps.length]);
 			saved = false;
 		},
 		error: function(status) {
@@ -52,10 +48,8 @@ function fetchNext() {
 
 function displayAP(data) {
 	var id = data.id;
-	//console.log(id);
-	//console.log(data);
 
-	$.couch.db("uulm-networking").openDoc(id, {
+	$.couch.db(db_name).openDoc(id, {
 		success: function(data) {
 			curr_doc = data;
 
@@ -69,6 +63,7 @@ function displayAP(data) {
 	});
 
 }
+
 
 function onMapClick(e) {
 	var coord = [e.latlng.lat, e.latlng.lng];
@@ -87,11 +82,17 @@ function onMapClick(e) {
 function saveAP(doc) {
 	if (saved) return;
 
-	$.couch.db("uulm-networking").saveDoc(doc, {
+	$.couch.db(db_name).saveDoc(doc, {
 		success: function(data) {
-			console.log(data);
+			// then the person skipped entries,
+			// when saved now the curr_doc will auomtically
+			// be sorted at the end, thus one document will
+			// get in its place
+			if (i > 0) --i;
+
 			curr_doc = undefined;
-			saved = true;
+			saved = false;
+			map.removeLayer(marker);
 			fetchNext();
 		},
 		error: function(status) {
@@ -102,5 +103,5 @@ function saveAP(doc) {
 
 
 function skip() {
-	displayAP(all_aps.rows[++i]);
+	displayAP(all_aps[++i]);
 }
