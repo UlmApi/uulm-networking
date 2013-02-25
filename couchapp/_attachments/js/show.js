@@ -21,18 +21,27 @@ $(function() {
 	map.on('click', onMapClick);
 	L.tileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution}).addTo(map);
 
-	//$.couch.urlPrefix = "http://uulm-networking.iriscouch.com"
-	$.couch.urlPrefix = "http://localhost:5984";
+	$.couch.urlPrefix = "http://uulm-networking.iriscouch.com"
+	//$.couch.urlPrefix = "http://localhost:5984";
 	fetchNext();
 }, false);
 
 
 function fetchNext() {
 	$.couch.db(db_name).view("couchapp/aps", {
-		descending: true,
+		descending: false,
 		success: function(data) {
 			all_aps = data.rows;
-			console.log(all_aps);
+			console.log(data);
+
+			/*
+			leftCount = all_aps.length;
+			for (var i in all_aps) {
+				console.log(all_aps[i])
+				if (all_aps[i].coords.length > 0)
+					--leftCount;
+			}
+			*/
 
 			// if skipping until end, start fresh
 			displayAP(all_aps[i % all_aps.length]);
@@ -55,13 +64,30 @@ function displayAP(data) {
 
 			$("#ap_id").text(curr_doc._id);
 			$("#ap_desc").text(curr_doc.desc);
-			$("#aps_left").text(leftCount);
+			getLeftCount();
 		},
 		error: function(status) {
 			console.log(status);
 		}
 	});
 
+}
+
+
+function getLeftCount() {
+	$.couch.db(db_name).view("couchapp/aps", {
+		success: function(data) {
+			console.log(data);
+			$("#aps_left").text(data.rows[0].value);
+		},
+		error: function(status) {
+			console.log(status);
+		},
+		reduce: true,
+		descending: false,
+		group: true,
+		group_level: 1
+	});
 }
 
 
@@ -92,6 +118,7 @@ function saveAP(doc) {
 
 			curr_doc = undefined;
 			saved = false;
+			getLeftCount();
 			map.removeLayer(marker);
 			fetchNext();
 		},

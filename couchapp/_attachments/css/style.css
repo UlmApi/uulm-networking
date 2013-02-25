@@ -64,6 +64,7 @@ html, body, #map {
 .logos {
 	position:absolute;
 	bottom:10px;
+	display: none;
 	left:10px;
 	z-index:99;
 }
@@ -265,10 +266,11 @@ html, body, #map {
 }
 
 #notification .status {
-	font-size: 0.6em;
-	float: right;
+	font-size: 1.0em;
 	color: #777;
-	display: none;
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
 }
 
 #notification #skip {
