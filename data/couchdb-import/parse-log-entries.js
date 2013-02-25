@@ -1,8 +1,5 @@
 var fs = require('fs');
 
-var ap_data = fs.readFileSync("../access-points-desc.asc", "utf-8");
-var ap_lines = ap_data.split("\n");
-
 var authlog_data = fs.readFileSync("../wlan-client-authlog.anon", "utf-8");
 var authlog_lines = authlog_data.split("\n");
 
@@ -40,8 +37,6 @@ for (var i in authlog_lines) {
 	var arr = {"Sun" : 0, "Mon" : 1, "Tue" : 2, "Wed" : 3, 
 			"Thu" : 4, "Fri" : 5, "Sat" : 6};
 
-	// correlate with ap_data
-	entity.desc = getAPDesc(ap_label);
 	entity.weekday = arr[entity.weekday];
 	obj.docs.push(entity);
 
@@ -53,19 +48,3 @@ for (var i in authlog_lines) {
 }
 
 //console.log(JSON.stringify(obj.docs));
-
-function getAPDesc(ap) {
-	for (var i in ap_lines) {
-		var line = ap_lines[i].split("\t");
-		var desc = ap_lines[i]
-				.replace(/^[A-Za-z\d.-]+\s+/g, "")
-				.replace(/"/g, '');
-
-		if (line[0] == ap)
-			return desc;
-	}
-	return "";
-}
-
-
-
