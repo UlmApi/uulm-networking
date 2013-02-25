@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		, zoom: 17
 		, layers: tile_groups
 	});
+	map.on('click', onMapClick);
 	L.tileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution}).addTo(map);
 
 
@@ -31,8 +32,60 @@ document.addEventListener('DOMContentLoaded', function() {
 	$.couch.info({
 	    success: function(data) {
 		    console.log(data);
-			}
-			});
+		}
+	});
+
+	// get all aps from view
+	$.couch.db("uulm-networking").view("couchapp/aps", {
+		success: function(data) {
+			// console.log(data);
+			take(data.rows[0]);
+		},
+		error: function(status) {
+			console.log(status);
+		},
+		reduce: false
+	});
 
 }, false);
 
+
+var curr_doc;
+function take(data) {
+	var id = data.id;
+	console.log(id);
+	console.log(data);
+
+	$.couch.db("uulm-networking").openDoc(id, {
+		success: function(data) {
+			curr_doc = data;
+		},
+		error: function(status) {
+			console.log(status);
+		}
+	});
+
+}
+
+function onMapClick(e) {
+	var coord = [e.latlng.lat, e.latlng.lng];
+	if (curr_doc) {
+		curr_doc.coords.push(coord);
+		save(curr_doc);
+	}
+}
+
+
+function save(doc) {
+	console.log(doc);
+	$.couch.db("uulm-networking").saveDoc(doc, {
+		success: function(data) {
+			console.log(data);
+			curr_doc = undefined;
+			// fetch new entry
+		},
+		error: function(status) {
+			console.log(status);
+		}
+	});
+}

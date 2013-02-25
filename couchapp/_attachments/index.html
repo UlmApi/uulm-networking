@@ -24,9 +24,20 @@
 <body>
 
 	<div id="map"></div>
+
+	<div id="notification">
+		<h4>
+			<span id="label">Bitte klicken: </span>
+			<span id="ap_id"></span><br />
+			<span id="ap_desc"></span>
+		<h4>
+
+		<div class="status">APs left: <span id="aps_left"></span></div>
+	</div>
 	
 	<div class="logos">
-		<a href="javascript:dialog()"><img src="./img/ulmapi.png" alt="ulmapi"
+		<a href="javascript:$('#dialog-confirm').dialog(dialog_opt);">
+		<img src="./img/ulmapi.png" alt="ulmapi"
 			title="Informationen zu diesem Projekt" /></a>
 	</div>
 
