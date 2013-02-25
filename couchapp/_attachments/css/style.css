@@ -235,7 +235,7 @@ html, body, #map {
 
 #notification {
 	position:absolute;
-	top: 10%;
+	top: 10px;
 	left: 50%;
 	width: 500px;
 	margin-left: -250px;
@@ -260,11 +260,24 @@ html, body, #map {
 }
 
 #notification #ap_desc {
-	font-size: 1.6em;
+	font-size: 1.2em;
 }
 
 #notification .status {
 	font-size: 0.6em;
 	float: right;
 	color: #777;
+	display: none;
 }
+
+#notification .status #skip {
+	font-size: 0.6em;
+	float: right;
+}
+
+#notification a {
+	font-weight: normal;
+	float: right;
+	color: #0078A8;
+}
+

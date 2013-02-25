@@ -1,9 +1,14 @@
-var map;
 var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1443dfdd3c784060aedbf4063cd1709b/997/256/{z}/{x}/{y}.png';
 var cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade';
 
+var map;
+var marker;
+
 var curr_doc;
+var all_aps;
 var leftCount = 0;
+var i = 0;
+var saved = false;
 
 
 $(function() {
@@ -32,7 +37,10 @@ function fetchNext() {
 			}
 			*/
 
-			displayAP(data.rows[0]);
+			all_aps = data;
+			i = 0;
+			displayAP(all_aps.rows[i]);
+			saved = false;
 		},
 		error: function(status) {
 			console.log(status);
@@ -50,7 +58,7 @@ function displayAP(data) {
 	$.couch.db("uulm-networking").openDoc(id, {
 		success: function(data) {
 			curr_doc = data;
-			console.log(curr_doc)
+
 			$("#ap_id").text(curr_doc._id);
 			$("#ap_desc").text(curr_doc.desc);
 			$("#aps_left").text(leftCount);
@@ -65,22 +73,34 @@ function displayAP(data) {
 function onMapClick(e) {
 	var coord = [e.latlng.lat, e.latlng.lng];
 	if (curr_doc) {
-		curr_doc.coords.push(coord);
-		saveAP(curr_doc);
+		marker = L.marker([coord[0], coord[1]]).addTo(map);
+		if (confirm("Sicher?")) {
+			curr_doc.coords.push(coord);
+			saveAP(curr_doc);
+		} else {
+			map.removeLayer(marker);
+		}
 	}
 }
 
 
 function saveAP(doc) {
-	console.log(doc);
+	if (saved) return;
+
 	$.couch.db("uulm-networking").saveDoc(doc, {
 		success: function(data) {
 			console.log(data);
 			curr_doc = undefined;
+			saved = true;
 			fetchNext();
 		},
 		error: function(status) {
 			console.log(status);
 		}
 	});
+}
+
+
+function skip() {
+	displayAP(all_aps.rows[++i]);
 }
