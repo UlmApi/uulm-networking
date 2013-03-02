@@ -6,9 +6,9 @@ week university life (Fri to Fri).
 Additionally we have included various tools for working with the data.
 
 ```
-data/		Data files and CouchDB import script.
-couchapp/	Web application for crowd-sourcing the process of
-		collecting geolocation for the access points
+data/           Data files and CouchDB import script.
+couchapp/       Web application for crowd-sourcing the process of
+                collecting geolocation for the access points
 ```
 
 
