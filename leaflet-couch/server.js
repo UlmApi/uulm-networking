@@ -12,6 +12,7 @@ io = io.listen(server);
 io.sockets.on('connection', function (socket) {
 	socket.emit('connection');
 
+/*
 	socket.on('pull', function (data){
 		socket.emit('push', [{
 			day: "Fri", 
@@ -20,6 +21,7 @@ io.sockets.on('connection', function (socket) {
 			lon: 9.987516403198242
 		}]);
 	});
+*/
 });
 
 

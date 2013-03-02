@@ -1,3 +1,17 @@
+# What is this?
+
+This is a repository containing the pseudonymous access point logs of one 
+week university life (Fri to Fri). 
+
+Additionally we have included various tools for working with the data.
+
+```
+data/		Data files and CouchDB import script.
+couchapp/	Web application for crowd-sourcing the process of
+		collecting geolocation for the access points
+```
+
+
 # ToDo
 
  * Geolocations for all Access Points have to be added
@@ -5,12 +19,10 @@
 
 # Data
 
-Data is stored within two files:
 
 ## ./data/wlan-client-authlog.anon
 
-Contains log data for one week university life. Entries are created
-whenever a WLAN-Client associates with an Access Point.
+Entries are created whenever a WLAN-Client associates with an Access Point.
 
 ```
 DATUM          UHRZEIT  OUI      HASHED-MAC                      DNS-AP
