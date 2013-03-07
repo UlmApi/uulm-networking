@@ -19,6 +19,7 @@ couchapp/       Web application for crowd-sourcing the process of
 
 # Data
 
+Execute `cd data; tar xfv data.tar.gz` to uncompress the files.
 
 ## ./data/wlan-client-authlog.anon
 
@@ -57,3 +58,14 @@ $ make clean
 ```
 
 You should now have 526359 rows in your database.
+
+
+# License 
+
+	The files `wlan-client-authlog.anon` and `access-points-desc.asc` are made 
+	available by the University of Ulm under the Open Database License: 
+	http://opendatacommons.org/licenses/odbl/1.0/. 
+
+	Any rights in individual contents of the database are licensed under 
+	the Database Contents License:
+	http://opendatacommons.org/licenses/dbcl/1.0/
