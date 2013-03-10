@@ -106,12 +106,14 @@ function onMapClick(e) {
 
 
 function saveAP(doc) {
+	// because of strange double-save error couldn't find
+	// the bug, but this fixes it
 	if (saved) return;
 
 	$.couch.db(db_name).saveDoc(doc, {
 		success: function(data) {
 			// then the person skipped entries,
-			// when saved now the curr_doc will auomtically
+			// when saved now the curr_doc will automatmically
 			// be sorted at the end, thus one document will
 			// get in its place
 			if (i > 0) --i;
