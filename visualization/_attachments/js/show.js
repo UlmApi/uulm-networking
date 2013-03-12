@@ -18,37 +18,47 @@ var FizzyText = function() {
 var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
-var startTS = 1363302000000;
+var startTS = 1363958272000;
+//var startTS = 1363302000000;
 var endTS = 1363906800000;
+
+var particleGroup, particleAttributes;
+var groups = {};
+
 
 $(function() {
 	var text = new FizzyText();
 	var gui = new dat.GUI({ autoPlace: false, width: 295 });
 	document.getElementById("gui").appendChild(gui.domElement);
 
-	gui.add(text, 'weekday', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] );
-	gui.add(text, 'time', 0, 24);
-	gui.add(text, 'display entire week');
+	var weeks = gui.add(text, 'weekday', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] );
+	var time = gui.add(text, 'time', 0, 24);
+	var display_week = gui.add(text, 'display entire week');
+
+	display_week.onChange(function(value) {
+		resetGroups();
+		if (value) displayEntireWeek();
+	});
 
 	init();
 	animate();
 });
 
-function pGroup(x, y, h, count) {
-	var particleTexture = THREE.ImageUtils.loadTexture( 'spark.png' );
+
+function pGroup(apid, x, y, h, count) {
+	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	h *= 1;
 	count = (count * 0.1) % 30;
 
-
-	particleGroup = new THREE.Object3D();
-	particleAttributes = { startSize: [], startPosition: [], randomness: [] };
+	//particleGroup = new THREE.Object3D();
+	particleAttributes = {startSize: [], startPosition: [], randomness: []};
 	
 	var totalParticles = count;
 	//var totalParticles = 200;
 	var radiusRange = 2 * h;
-	for( var i = 0; i < totalParticles; i++ ) 
-	{
-	    var spriteMaterial = new THREE.SpriteMaterial( { map: particleTexture, useScreenCoordinates: false, color: 0xffffff } );
+	for( var i = 0; i < totalParticles; i++ ) {
+	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
+		useScreenCoordinates: false, color: 0xffffff});
 		
 		var sprite = new THREE.Sprite( spriteMaterial );
 		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
@@ -56,12 +66,10 @@ function pGroup(x, y, h, count) {
 		//sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 
-		// for a cube:
-		// sprite.position.multiplyScalar( radiusRange );
 		// for a solid sphere:
 		// sprite.position.setLength( radiusRange * Math.random() );
 		// for a spherical shell:
-		sprite.position.setLength( radiusRange * (Math.random() * 0.1 + 0.9) );
+		sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
 		
 		// sprite.color.setRGB( Math.random(),  Math.random(),  Math.random() ); 
 		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
@@ -69,27 +77,37 @@ function pGroup(x, y, h, count) {
 		// sprite.opacity = 0.80; // translucent particles
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 		
-		particleGroup.add( sprite );
+		groups[apid].add(sprite);
+		//particleGroup.add( sprite );
 		// add variable qualities to arrays, if they need to be accessed later
 		particleAttributes.startPosition.push( sprite.position.clone() );
 		particleAttributes.randomness.push( Math.random() );
 	}
-	particleGroup.position.x = x;
-	particleGroup.position.y = y;
-	scene.add( particleGroup );
+
+	//particleGroup.position.x = x;
+	//particleGroup.position.y = y;
+	groups[apid].position.x = x;
+	groups[apid].position.y = y;
+	scene.add(groups[apid]);
+	//scene.add(particleGroup);
+}
+
+
+function resetGroups() {
+	for (var i in aps.rows) {
+		var id = aps.rows[i].id;
+		scene.remove(groups[id]);
+		groups[id] = new THREE.Object3D();
+	}
 }
 
 
 function init() {
-	for (var i in aps.rows) {
-		groups[aps.rows[i].id] = [];
-	}
-
-	getSnapshot(startTS);
 
 
 	scene = new THREE.Scene();
 //	scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
+
 
 	var VIEW_ANGLE = 35, 
 		ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, 
@@ -105,7 +123,8 @@ function init() {
 	renderer = new THREE.WebGLRenderer({ antialias: false,  clearAlpha: 1 });
 	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	//renderer.setClearColor("#fff", 1);
-container = document.createElement( 'div' );
+
+	container = document.createElement( 'div' );
 	document.body.appendChild( container );
 	container.appendChild(renderer.domElement);
 
@@ -114,46 +133,40 @@ container = document.createElement( 'div' );
 	THREEx.WindowResize(renderer, camera);
 	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
-
-var light = new THREE.PointLight(0xffffff);
+	/*
+	var light = new THREE.PointLight(0xffffff);
 	light.position.set(0,250,0);
 	scene.add(light);
+	*/
 
 
 	/* floor */
 	var material = new THREE.MeshBasicMaterial({
 		map: THREE.ImageUtils.loadTexture("map-simple.svg"),
-fog: false
+		fog: false
 	});
 
 	var geometry = new THREE.PlaneGeometry(3074, 1782);
 	var meshCanvas = new THREE.Mesh(geometry, material);
 	scene.add(meshCanvas);
 
+	resetGroups();
 
-
-
-	displayEntireWeek();
+	//displayEntireWeek();
 	//exampleSphere();
-
+	getSnapshot(startTS);
 }
 
 
-
-var particleGroup, particleAttributes;
-var groups = {};
-
-
-function animate() 
-{
-    requestAnimationFrame( animate );
+function animate() {
+	requestAnimationFrame(animate);
 	render();		
 	update();
 }
 
-function update()
-{
-/*
+
+function update() {
+	/*
 	var time = 4 * 1;
 	//var time = 4 * clock.getElapsedTime();
 	
@@ -188,12 +201,11 @@ function update()
 	*/
 	
 	controls.update();
-	
 }
 
-function render() 
-{
-	renderer.render( scene, camera );
+
+function render() {
+	renderer.render(scene, camera);
 }
 
 
@@ -218,14 +230,20 @@ function getSnapshot(ts) {
 	$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
 			console.log(data);
+
+			// adapt the groups
 		},
 		error: function(status) {
 			console.log(status);
 		},
-		reduce: true,
+		startkey: ts,
+		endkey: ts + (60*20), /* next 20 min */
+		reduce: false
+		/*
 		descending: false,
 		group: true,
 		group_level: 1
+		*/
 	});
 }
 
@@ -262,7 +280,7 @@ function displayEntireWeek() {
 
 		var h = oneWeek[id] * 0.0004;
 		var pos = coord2px(value[0][0], value[0][1]);
-		pGroup(pos.x, pos.y, h, oneWeek[id]);
+		pGroup(id, pos.x, pos.y, h, oneWeek[id]);
 
 		/*
 		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 20, 20), sphereMaterial);
@@ -281,19 +299,7 @@ function displayEntireWeek() {
 	}
 }
 
-/*
-function render() {
-	renderer.render(scene, camera);
-	controls.update();
-	
-	console.log(
-		" " + camera.position.x +
-		" " + camera.position.y +
-		" " + camera.position.z
-	);
 
-}
-*/
 function coord2px(lat, lon) {
 	/*
 		48.42677
@@ -320,4 +326,3 @@ function coord2px(lat, lon) {
 
 	return {x: coordX, y: coordY};
 }
-
