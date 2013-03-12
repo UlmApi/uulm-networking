@@ -80,6 +80,13 @@ function pGroup(x, y, h, count) {
 
 
 function init() {
+	for (var i in aps.rows) {
+		groups[aps.rows[i].id] = [];
+	}
+
+	getSnapshot(startTS);
+
+
 	scene = new THREE.Scene();
 //	scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
 
@@ -124,21 +131,6 @@ fog: false
 
 
 
-/*
-	$.couch.db(db_name).view("couchapp/aps", {
-		success: function(data) {
-			console.log(data);
-			$("#aps_left").text(data.rows[0].value);
-		},
-		error: function(status) {
-			console.log(status);
-		},
-		reduce: true,
-		descending: false,
-		group: true,
-		group_level: 1
-	});
-	*/
 
 	displayEntireWeek();
 	//exampleSphere();
@@ -148,6 +140,7 @@ fog: false
 
 
 var particleGroup, particleAttributes;
+var groups = {};
 
 
 function animate() 
@@ -159,6 +152,7 @@ function animate()
 
 function update()
 {
+/*
 	var time = 4 * 1;
 	//var time = 4 * clock.getElapsedTime();
 	
@@ -190,6 +184,7 @@ function update()
 	{ 
 		// do something cool
 	}
+	*/
 	
 	controls.update();
 	
@@ -218,7 +213,24 @@ function exampleSphere() {
 }
 
 
+function getSnapshot(ts) {
+	$.couch.db(db_name).view("logs/time", {
+		success: function(data) {
+			console.log(data);
+		},
+		error: function(status) {
+			console.log(status);
+		},
+		reduce: true,
+		descending: false,
+		group: true,
+		group_level: 1
+	});
+}
+
+
 function displayEntireWeek() {
+/*
 	var sphereMaterial = new THREE.MeshLambertMaterial(
 	{color: 0xFF0000, 
 	//transparent: true,
@@ -238,6 +250,7 @@ function displayEntireWeek() {
 
 	//var material = new THREE.MeshLambertMaterial( parameters);
 	var material = new THREE.ShaderMaterial( parameters);
+	*/
 
 	for (var i in aps.rows) {
 		var id = aps.rows[i].id;
@@ -247,7 +260,9 @@ function displayEntireWeek() {
 		if (value.length == 0) continue;
 
 		var h = oneWeek[id] * 0.0004;
+		pGroup(pos.x, pos.y, h, oneWeek[id]);
 
+		/*
 		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 20, 20), sphereMaterial);
 		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 40, 40), material);
 		var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 16, 16), material);
@@ -257,7 +272,7 @@ function displayEntireWeek() {
 		sphere.position.x = pos.x;
 		sphere.position.y = pos.y;
 		//scene.add(sphere);
-		pGroup(pos.x, pos.y, h, oneWeek[id]);
+		*/
 
 		//if (i == 1) break;
 		//if (i == 120) break;
