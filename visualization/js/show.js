@@ -17,6 +17,9 @@ var FizzyText = function() {
 var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
+var startTS = 1363302000000;
+var endTS = 1363906800000;
+
 $(function() {
 	var text = new FizzyText();
 	var gui = new dat.GUI({ autoPlace: false, width: 295 });
@@ -30,15 +33,18 @@ $(function() {
 	animate();
 });
 
-function pGroup(x, y, h) {
+function pGroup(x, y, h, count) {
 	var particleTexture = THREE.ImageUtils.loadTexture( 'spark.png' );
-	h *= 3;
+	h *= 1;
+	count = (count * 0.1) % 30;
+
 
 	particleGroup = new THREE.Object3D();
 	particleAttributes = { startSize: [], startPosition: [], randomness: [] };
 	
-	var totalParticles = 200;
-	var radiusRange = 50 * h;
+	var totalParticles = count;
+	//var totalParticles = 200;
+	var radiusRange = 2 * h;
 	for( var i = 0; i < totalParticles; i++ ) 
 	{
 	    var spriteMaterial = new THREE.SpriteMaterial( { map: particleTexture, useScreenCoordinates: false, color: 0xffffff } );
@@ -153,7 +159,8 @@ function animate()
 
 function update()
 {
-	var time = 4 * clock.getElapsedTime();
+	var time = 4 * 1;
+	//var time = 4 * clock.getElapsedTime();
 	
 	for ( var c = 0; c < particleGroup.children.length; c ++ ) 
 	{
@@ -236,6 +243,7 @@ function displayEntireWeek() {
 		var id = aps.rows[i].id;
 		var value = aps.rows[i].value;
 
+
 		if (value.length == 0) continue;
 
 		var h = oneWeek[id] * 0.0004;
@@ -249,9 +257,10 @@ function displayEntireWeek() {
 		sphere.position.x = pos.x;
 		sphere.position.y = pos.y;
 		//scene.add(sphere);
-		pGroup(pos.x, pos.y, h);
+		pGroup(pos.x, pos.y, h, oneWeek[id]);
 
-		if (i == 1) break;
+		//if (i == 1) break;
+		//if (i == 120) break;
 		//break;
 	}
 }
