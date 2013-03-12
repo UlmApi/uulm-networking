@@ -93,6 +93,8 @@ function pGroup(apid, x, y, h, count) {
 }
 
 
+var currentlyDisplayedUUIDs = {};
+
 function resetGroups() {
 	for (var i in aps.rows) {
 		var id = aps.rows[i].id;
@@ -154,7 +156,7 @@ function init() {
 
 	//displayEntireWeek();
 	//exampleSphere();
-	getSnapshot(startTS);
+	displaySnapshot(startTS, startTS + (60*20))
 }
 
 
@@ -226,18 +228,53 @@ function exampleSphere() {
 }
 
 
-function getSnapshot(ts) {
+function displaySnapshot(fstTS, sndTS) {
 	$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
 			console.log(data);
+			var rows = data.rows;
 
-			// adapt the groups
+			var newDisplays = {};
+			for (var i in rows) {
+				var uuid = rows[i].uuid;
+				// does a particle for this uuid already exist?
+				if (currentlyDisplayedUUIDs[uuid]) {
+
+					// if so has it changed the access point?
+					if (currentlyDisplayedUUIDs[uuid] != rows[i].ap) {
+						// different ap!
+						// move ap to other group
+					}
+				}
+
+				// if not show up animation and save as displayed
+				newDisplays[uuid] = rows[i].ap;
+			}
+
+			// what is the difference between the two objects?
+			// remove the difference
+			for (var i in newDisplays) {
+				for (var i in currentlyDisplayedUUIDs) {
+					if (currentlyDisplayedUUIDs[i] === newDisplays[i]) {
+						delete currentlyDisplayedUUIDs[i];
+						break;
+					}
+				}
+			}
+
+			// whats left now in the object is no longer displayed
+			for (var i in currentlyDisplayedUUIDs) {
+				var ap = currentlyDisplayedUUIDs[i];
+				//groups[ap].remove(
+			}
+
+			currentlyDisplayedUUIDs = newDisplays;
 		},
 		error: function(status) {
 			console.log(status);
 		},
-		startkey: ts,
-		endkey: ts + (60*20), /* next 20 min */
+		startkey: fstTS,
+		endkey: sndTS,
 		reduce: false
 		/*
 		descending: false,
