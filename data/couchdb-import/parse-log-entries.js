@@ -30,7 +30,7 @@ for (var i in authlog_lines) {
 	time = time.split(":");
 
 	// new Date(year, month, day, hours, mins, secs);
-	var now = new Date(date[2], date[1], date[0], 
+	var now = new Date(date[2], date[1]-1, date[0], 
 			   time[0], time[1], time[2]);
 	entity.time =  now.getTime();
 
