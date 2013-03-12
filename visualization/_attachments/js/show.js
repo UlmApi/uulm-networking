@@ -7,6 +7,7 @@ var container;
 var camera, scene, renderer, controls;
 
 var color, colors = [];
+var db_name = "uulm-networking";
 
 var FizzyText = function() {
   this.time = 12;
@@ -214,7 +215,7 @@ function exampleSphere() {
 
 
 function getSnapshot(ts) {
-	$.couch.db(db_name).view("logs/time", {
+	$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
 			console.log(data);
 		},
@@ -260,6 +261,7 @@ function displayEntireWeek() {
 		if (value.length == 0) continue;
 
 		var h = oneWeek[id] * 0.0004;
+		var pos = coord2px(value[0][0], value[0][1]);
 		pGroup(pos.x, pos.y, h, oneWeek[id]);
 
 		/*
@@ -268,7 +270,6 @@ function displayEntireWeek() {
 		var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 16, 16), material);
 
 	        sphere.overdraw = true;
-		var pos = coord2px(value[0][0], value[0][1]);
 		sphere.position.x = pos.x;
 		sphere.position.y = pos.y;
 		//scene.add(sphere);
