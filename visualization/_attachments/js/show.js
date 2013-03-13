@@ -9,38 +9,71 @@ var camera, scene, renderer, controls;
 var color, colors = [];
 var db_name = "uulm-networking";
 
+var startTS = 1363302007000;
+var endTS = 1363906800000;
+
 var FizzyText = function() {
-  this.time = 12;
+  this.time = new Date(startTS).getHours();
   this.label = 'foo';
   this["display entire week"] = false;
-  this.weekday = "Monday";
+  this.weekday = "0";
 };
 
 var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
-var startTS = 1363302007000;
-//var startTS = 1363302000000;
-var endTS = 1363906800000;
 
 var particleGroup, particleAttributes;
 var groups = {};
 
 var ctrls = {};
+var week_arr = {
+ 0 : 'Friday'
+, 1 : 'Saturday'
+, 2 : 'Sunday'
+, 3 : 'Monday' 
+, 4 : 'Tuesday'
+, 5 : 'Wednesday'
+, 6 : 'Thursday'
+, 7 : 'Friday'
+};
+//var week_arr = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 $(function() {
 	var text = new FizzyText();
-	var gui = new dat.GUI({ autoPlace: false, width: 295 });
+	var gui = new dat.GUI({ autoPlace: false, width: 295});
 	document.getElementById("gui").appendChild(gui.domElement);
 
 	ctrls.label = gui.add(text, 'label', 'foo');
-	ctrls.weeks = gui.add(text, 'weekday', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] );
+	ctrls.weekday = gui.add(text, 'weekday', week_arr);
 	ctrls.time = gui.add(text, 'time', 0, 24);
 	ctrls.display_week = gui.add(text, 'display entire week');
 
 	ctrls.display_week.onChange(function(value) {
 		resetGroups();
 		if (value) displayEntireWeek();
+	});
+
+	ctrls.weekday.onChange(function(value) {
+		var startDay = new Date(startTS).getDate();
+
+		var i = 0;
+		for (var i in week_arr) {
+			if (week_arr[i] == value) break;
+			i++;
+		}
+		i--;
+
+		var newD = new Date(currentTS);
+		newD.setDate(startDay + i);
+		currentTS = newD.getTime();
+	});
+
+	ctrls.time.onChange(function(value) {
+		console.log("time: " + value)
+		var newD = new Date(currentTS);
+		newD.setHours(value - 1);
+		currentTS = newD.getTime();
 	});
 
 	init();
@@ -239,6 +272,7 @@ function init() {
 	}
 
 	currentTS = startTS;
+
 	//displaySnapshot(startTS, startTS + snapshotDiff)
 	nextSnapshot();
 	setInterval("nextSnapshot()", 1000);
