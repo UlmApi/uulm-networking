@@ -55,6 +55,10 @@ var allPGroups = {}
 var currentTS;
 var snapshotDiff = 60*60*60;
 
+/* when an onChange event is fired: was it because the user did change sth,
+or because the change was induced by code */
+var inducedChange = false;
+
 
 $(function() {
 	var text = new FizzyText();
@@ -380,8 +384,6 @@ function exampleSphere() {
 	//scene.add(sphere);
 }
 
-
-var inducedChange = false;
 function displaySnapshot(fstTS, sndTS) {
 	//$("#gui .string input[type=text]").attr("value", new Date(fstTS));
 
