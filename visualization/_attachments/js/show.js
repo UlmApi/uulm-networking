@@ -29,16 +29,15 @@ var groups = {};
 
 var ctrls = {};
 var week_arr = {
- 0 : 'Friday'
-, 1 : 'Saturday'
-, 2 : 'Sunday'
-, 3 : 'Monday' 
-, 4 : 'Tuesday'
-, 5 : 'Wednesday'
-, 6 : 'Thursday'
-, 7 : 'Friday'
+	 0 : 'Friday'
+	, 1 : 'Saturday'
+	, 2 : 'Sunday'
+	, 3 : 'Monday' 
+	, 4 : 'Tuesday'
+	, 5 : 'Wednesday'
+	, 6 : 'Thursday'
+	, 7 : 'Friday'
 };
-//var week_arr = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 $(function() {
 	var text = new FizzyText();
@@ -59,19 +58,6 @@ $(function() {
 			currentTS = startTS;
 			resetGroups();
 
-			for (var i in aps.rows) {
-				var ap = aps.rows[i];
-				var apid = ap.id;
-				var coords = ap.value;
-				if (coords.length === 0) continue;
-				var pos = coord2px(coords[0][0], coords[0][1]);
-
-				allPGroups[apid] = new THREE.Object3D();
-				allSprites[apid] = [];
-				allPGroups[apid].position.x = pos.x;
-				allPGroups[apid].position.y = pos.y;
-				scene.add(allPGroups[apid])
-			}
 
 
 			int = setInterval("nextSnapshot()", 1000);
@@ -94,6 +80,7 @@ $(function() {
 	});
 
 	ctrls.time.onChange(function(value) {
+		resetGroups()
 		console.log("time: " + value)
 		var newD = new Date(currentTS);
 		newD.setHours(value - 1);
@@ -236,6 +223,19 @@ function resetGroups() {
 
 		groups[id] = new THREE.Object3D();
 	}
+			for (var i in aps.rows) {
+				var ap = aps.rows[i];
+				var apid = ap.id;
+				var coords = ap.value;
+				if (coords.length === 0) continue;
+				var pos = coord2px(coords[0][0], coords[0][1]);
+
+				allPGroups[apid] = new THREE.Object3D();
+				allSprites[apid] = [];
+				allPGroups[apid].position.x = pos.x;
+				allPGroups[apid].position.y = pos.y;
+				scene.add(allPGroups[apid])
+			}
 }
 
 
@@ -332,6 +332,9 @@ function addSprite(apid) {
 	//particle(log_entry.ap, pos.x, pos.y, h, oneWeek[id]);
 	//function particle(apid, x, y, h, count) {
 
+	if (allPGroups[apid] == undefined) allPGroups[apid] = new THREE.Object3D();
+	if (allSprites[apid] == undefined) allSprites[apid] = [];
+
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	particleAttributes = {startSize: [], startPosition: [], randomness: []};
 	
@@ -339,7 +342,13 @@ function addSprite(apid) {
 		useScreenCoordinates: false, color: 0xffffff});
 		
 		var h = 2;
+
+		//console.log(allSprites)
+
 		var radiusRange = 2 * h;
+		radiusRange = allSprites[apid].length * 2;
+		if (radiusRange === 0) radiusRange = 1;
+
 		var sprite = new THREE.Sprite(spriteMaterial);
 		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
 		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
@@ -348,8 +357,6 @@ function addSprite(apid) {
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 
 
-	if (allPGroups[apid] == undefined) allPGroups[apid] = new THREE.Object3D();
-	if (allSprites[apid] == undefined) allSprites[apid] = [];
 	allPGroups[apid].add(sprite);
 	allSprites[apid].push(sprite);
 }
