@@ -30,14 +30,14 @@ var groups = {};
 
 var ctrls = {};
 var week_arr = {
-	 0 : 'Friday'
-	, 1 : 'Saturday'
-	, 2 : 'Sunday'
-	, 3 : 'Monday' 
-	, 4 : 'Tuesday'
-	, 5 : 'Wednesday'
-	, 6 : 'Thursday'
-	, 7 : 'Friday'
+	 'Friday' : 0
+	, 'Saturday' : 1
+	, 'Sunday' : 2
+	, 'Monday' : 3
+	, 'Tuesday' : 4
+	, 'Wednesday' : 5
+	, 'Thursday' : 6
+	, 'Friday' : 7
 };
 
 var days = {
@@ -87,15 +87,15 @@ $(function() {
 
 		var startDay = new Date(startTS).getDate();
 
-		var i = 0;
+		var c = 0;
 		for (var i in week_arr) {
 			if (week_arr[i] == value) break;
-			i++;
+			c++;
 		}
-		i--;
+		c--;
 
 		var newD = new Date(currentTS);
-		newD.setDate(startDay + i);
+		newD.setDate(startDay + c);
 		currentTS = newD.getTime();
 	});
 
@@ -385,7 +385,6 @@ var inducedChange = false;
 function displaySnapshot(fstTS, sndTS) {
 	//$("#gui .string input[type=text]").attr("value", new Date(fstTS));
 
-	inducedChange = true;
 	var d = new Date(fstTS);
 	var hours = (d.getHours() < 10) ? "0" + d.getHours() : d.getHours();
 	var mins = (d.getMinutes() < 10) ? "0" + d.getMinutes() : d.getMinutes();
@@ -394,7 +393,9 @@ function displaySnapshot(fstTS, sndTS) {
 		+ d.getDate() + "." + (d.getMonth()+1) + "." 
 		+ d.getFullYear() + " " + hours + ":" + mins);
 
+	inducedChange = true;
 	ctrls.hours.setValue(d.getHours());
+	inducedChange = true;
 	ctrls.weekday.setValue(d.getDate() - (new Date(startTS).getDate()));
 
 	$.couch.db(db_name).view("visualization/time", {
