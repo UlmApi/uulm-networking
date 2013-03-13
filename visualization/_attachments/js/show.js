@@ -55,11 +55,9 @@ $(function() {
 			resetGroups();
 			displayEntireWeek();
 		} else {
-			currentTS = startTS;
+			//currentTS = startTS;
+			/* make sure ctrls are set to the right time */
 			resetGroups();
-
-
-
 			int = setInterval("nextSnapshot()", 1000);
 		}
 	});
@@ -346,7 +344,7 @@ function addSprite(apid) {
 		//console.log(allSprites)
 
 		var radiusRange = 2 * h;
-		radiusRange = allSprites[apid].length * 2;
+		radiusRange = (allSprites[apid].length * 2) % 50;
 		if (radiusRange === 0) radiusRange = 1;
 
 		var sprite = new THREE.Sprite(spriteMaterial);

@@ -296,7 +296,7 @@ html, body, #map {
 	border-left: 3px solid #7D9AAA !important;
 }
 
-.dg .cr.number input[type="text"] {
+.dg .cr.number input[type="text"], .dg .cr.string input[type="text"] {
 	color: #7D9AAA !important;
 }
 
