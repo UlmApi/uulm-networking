@@ -11,6 +11,7 @@ var db_name = "uulm-networking";
 
 var startTS = 1363302007000;
 var endTS = 1363906800000;
+var int;
 
 var FizzyText = function() {
   this.time = new Date(startTS).getHours();
@@ -50,8 +51,31 @@ $(function() {
 	ctrls.display_week = gui.add(text, 'display entire week');
 
 	ctrls.display_week.onChange(function(value) {
-		resetGroups();
-		if (value) displayEntireWeek();
+		if (value) {
+			clearInterval(int);
+			resetGroups();
+			displayEntireWeek();
+		} else {
+			currentTS = startTS;
+			resetGroups();
+
+			for (var i in aps.rows) {
+				var ap = aps.rows[i];
+				var apid = ap.id;
+				var coords = ap.value;
+				if (coords.length === 0) continue;
+				var pos = coord2px(coords[0][0], coords[0][1]);
+
+				allPGroups[apid] = new THREE.Object3D();
+				allSprites[apid] = [];
+				allPGroups[apid].position.x = pos.x;
+				allPGroups[apid].position.y = pos.y;
+				scene.add(allPGroups[apid])
+			}
+
+
+			int = setInterval("nextSnapshot()", 1000);
+		}
 	});
 
 	ctrls.weekday.onChange(function(value) {
@@ -124,7 +148,7 @@ function particle(apid, x, y, h, count) {
 
 		allPGroups[apid].add( sprite );
 		//particleGroup.add( sprite );
-		allSprites.push(sprite)
+		allSprites[apid].push(sprite)
 		// add variable qualities to arrays, if they need to be accessed later
 		particleAttributes.startPosition.push( sprite.position.clone() );
 		particleAttributes.randomness.push( Math.random() );
@@ -199,6 +223,17 @@ function resetGroups() {
 	for (var i in aps.rows) {
 		var id = aps.rows[i].id;
 		scene.remove(groups[id]);
+
+		//console.log(id)
+		for (var j in allSprites[id]) {
+			//console.log(allSprites[id])
+			//if (allSprites[id][j] != undefined)
+				removeSpriteFromAP(id);
+		}
+
+		for (var i in allPGroups)
+			scene.remove(allPGroups[i])
+
 		groups[id] = new THREE.Object3D();
 	}
 }
@@ -275,7 +310,7 @@ function init() {
 
 	//displaySnapshot(startTS, startTS + snapshotDiff)
 	nextSnapshot();
-	setInterval("nextSnapshot()", 1000);
+	int = setInterval("nextSnapshot()", 1000);
 
 	//setInterval("rm()", 1000);
 }
@@ -289,9 +324,8 @@ function nextSnapshot() {
 
 /* add sprite, incl. fading in effect */
 var allSprites = {};
-function addSprite(log_entry) {
-	//var coords = aps[ log_entry.ap ];
-	var apid = log_entry.ap;
+function addSprite(apid) {
+	//var apid = log_entry.ap;
 	//console.log(log_entry)
 	//var pos = coord2px(coords[0][0], coords[0][1]);
 
@@ -455,7 +489,8 @@ function displaySnapshot(fstTS, sndTS) {
 					}
 				} else {
 					// if not show up animation and save as displayed
-					addSprite(rows[i].value);
+					addSprite(rows[i].value.ap);
+					//addSprite(rows[i].value);
 					newDisplays[uuid] = ap;
 					//console.log("added " + uuid + ", " + ap);
 				}
@@ -539,7 +574,14 @@ function displayEntireWeek() {
 		var h = oneWeek[id] * 0.0004;
 		var pos = coord2px(value[0][0], value[0][1]);
 		//pGroup(id, pos.x, pos.y, h, oneWeek[id]);
+
 		particle(id, pos.x, pos.y, h, oneWeek[id]);
+
+/*
+		var a = oneWeek[id];
+		while (--a >= 0)
+			addSprite(id)
+			*/
 
 		/*
 		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 20, 20), sphereMaterial);
