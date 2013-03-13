@@ -45,12 +45,15 @@ $(function() {
 });
 
 
+var allSprites = [];
+var allPGroups = {}
 function particle(apid, x, y, h, count) {
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	h *= 1;
 	count = (count * 0.1) % 30;
 
-	var particleGroup = new THREE.Object3D();
+	allPGroups[apid] = new THREE.Object3D();
+	//var particleGroup = new THREE.Object3D();
 	particleAttributes = {startSize: [], startPosition: [], randomness: []};
 	
 	var totalParticles = count;
@@ -83,16 +86,23 @@ function particle(apid, x, y, h, count) {
 		//groups[apid].add(sprite);
 
 
-		particleGroup.add( sprite );
+		allPGroups[apid].add( sprite );
+		//particleGroup.add( sprite );
+		allSprites.push(sprite)
 		// add variable qualities to arrays, if they need to be accessed later
 		particleAttributes.startPosition.push( sprite.position.clone() );
 		particleAttributes.randomness.push( Math.random() );
 
 		//scene.add(sprite)
 	}
+	/*
 	particleGroup.position.x = x;
 	particleGroup.position.y = y;
 	scene.add(particleGroup)
+	*/
+	allPGroups[apid].position.x = x;
+	allPGroups[apid].position.y = y;
+	scene.add(allPGroups[apid])
 
 	//groups[apid].position.x = x;
 	//groups[apid].position.y = y;
@@ -208,10 +218,26 @@ function init() {
 
 	resetGroups();
 
-	//displayEntireWeek();
+	displayEntireWeek();
 	//exampleSphere();
-	displaySnapshot(startTS, startTS + (60*20))
+	//displaySnapshot(startTS, startTS + (60*20))
+
+	setInterval("rm()", 1000);
 }
+
+/* remove a random sprite */
+function rm() {
+	var i = 200;
+
+	while (--i > 0) {
+		var sp = allSprites.pop();
+		for (var a in allPGroups) {
+			allPGroups[a].remove(sp)
+		}
+	}
+}
+
+
 
 
 function animate() {
@@ -293,6 +319,11 @@ function displaySnapshot(fstTS, sndTS) {
 			var newDisplays = {};
 			for (var i in rows) {
 				var uuid = rows[i].uuid;
+				var p = rows[i]
+				var ap = rows[i].value.ap
+				var pos = coord2px(aps[ap][0][0], p.coords[0][1]);
+				particle(uuid, p.x, pos.y, h, 100);
+
 				// does a particle for this uuid already exist?
 				if (currentlyDisplayedUUIDs[uuid]) {
 
