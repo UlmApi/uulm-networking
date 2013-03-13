@@ -14,7 +14,7 @@ var endTS = 1363906800000;
 var int;
 
 var FizzyText = function() {
-  this.time = new Date(startTS).getHours();
+  this.hours = new Date(startTS).getHours();
   this.label = 'foo';
   this["display entire week"] = false;
   this.weekday = "0";
@@ -23,8 +23,9 @@ var FizzyText = function() {
 var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
-
 var particleGroup, particleAttributes;
+var allSprites = {};
+var currentlyDisplayedUUIDs = {};
 var groups = {};
 
 var ctrls = {};
@@ -39,6 +40,22 @@ var week_arr = {
 	, 7 : 'Friday'
 };
 
+var days = {
+	  0 : 'Sunday'
+	, 1 : 'Monday' 
+	, 2 : 'Tuesday'
+	, 3 : 'Wednesday'
+	, 4 : 'Thursday'
+	, 5 : 'Friday'
+	, 6 : 'Saturday'
+};
+
+var allSprites = [];
+var allPGroups = {}
+var currentTS;
+var snapshotDiff = 60*60*60;
+
+
 $(function() {
 	var text = new FizzyText();
 	var gui = new dat.GUI({ autoPlace: false, width: 295});
@@ -46,7 +63,7 @@ $(function() {
 
 	ctrls.label = gui.add(text, 'label', 'foo');
 	ctrls.weekday = gui.add(text, 'weekday', week_arr);
-	ctrls.time = gui.add(text, 'time', 0, 24);
+	ctrls.hours = gui.add(text, 'hours', 0, 24);
 	ctrls.display_week = gui.add(text, 'display entire week');
 
 	ctrls.display_week.onChange(function(value) {
@@ -63,6 +80,11 @@ $(function() {
 	});
 
 	ctrls.weekday.onChange(function(value) {
+		if (inducedChange) {
+			inducedChange = false;
+			return;
+		}
+
 		var startDay = new Date(startTS).getDate();
 
 		var i = 0;
@@ -77,7 +99,12 @@ $(function() {
 		currentTS = newD.getTime();
 	});
 
-	ctrls.time.onChange(function(value) {
+	ctrls.hours.onChange(function(value) {
+		if (inducedChange) {
+			inducedChange = false;
+			return;
+		}
+
 		resetGroups()
 		console.log("time: " + value)
 		var newD = new Date(currentTS);
@@ -90,32 +117,23 @@ $(function() {
 });
 
 
-var allSprites = [];
-var allPGroups = {}
 function particle(apid, x, y, h, count) {
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	h *= 1;
 	count = (count * 0.1) % 30;
 
 	allPGroups[apid] = new THREE.Object3D();
-	//var particleGroup = new THREE.Object3D();
 	particleAttributes = {startSize: [], startPosition: [], randomness: []};
 	
 	var totalParticles = count;
-	//var totalParticles = 200;
 	var radiusRange = 2 * h;
-	//console.log(totalParticles);
 	for( var i = 0; i < totalParticles; i++ ) {
-	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
-		useScreenCoordinates: false, color: 0xffffff});
+		var spriteMaterial = new THREE.SpriteMaterial(
+			{map: particleTexture, useScreenCoordinates: false, color: 0xffffff});
 		
 		var sprite = new THREE.Sprite(spriteMaterial);
 		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
-		//sprite.scale.set( 32, 32, 1.0 ); // imageWidth, imageHeight
 		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
-		//sprite.position.set( x + Math.random() - 0.5, y + Math.random() - 0.5, Math.random() - 0.5 );
-
-		//sprite.position.set( x + Math.random() - 0.5, y + Math.random() - 0.5, 50 );
 
 		// for a solid sphere:
 		// sprite.position.setLength( radiusRange * Math.random() );
@@ -128,53 +146,34 @@ function particle(apid, x, y, h, count) {
 		// sprite.opacity = 0.80; // translucent particles
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 		
-		//groups[apid].add(sprite);
-
-
 		allPGroups[apid].add( sprite );
-		//particleGroup.add( sprite );
 		allSprites[apid].push(sprite)
+
 		// add variable qualities to arrays, if they need to be accessed later
 		particleAttributes.startPosition.push( sprite.position.clone() );
 		particleAttributes.randomness.push( Math.random() );
-
-		//scene.add(sprite)
 	}
-	/*
-	particleGroup.position.x = x;
-	particleGroup.position.y = y;
-	scene.add(particleGroup)
-	*/
 	allPGroups[apid].position.x = x;
 	allPGroups[apid].position.y = y;
 	scene.add(allPGroups[apid])
-
-	//groups[apid].position.x = x;
-	//groups[apid].position.y = y;
-	//scene.add(groups[apid]);
-	//scene.add(particleGroup);
 }
 
 
 function pGroup(apid, x, y, h, count) {
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
-	h *= 1;
+	var totalParticles = count;
+	var radiusRange = 2 * h;
+
 	count = (count * 0.1) % 30;
 
-	//particleGroup = new THREE.Object3D();
 	particleAttributes = {startSize: [], startPosition: [], randomness: []};
-	
-	var totalParticles = count;
-	//var totalParticles = 200;
-	var radiusRange = 2 * h;
+
 	for( var i = 0; i < totalParticles; i++ ) {
-	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
-		useScreenCoordinates: false, color: 0xffffff});
+		var spriteMaterial = new THREE.SpriteMaterial(
+			{map: particleTexture, useScreenCoordinates: false, color: 0xffffff});
 		
 		var sprite = new THREE.Sprite( spriteMaterial );
 		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
-		//sprite.scale.set( 32, 32, 1.0 ); // imageWidth, imageHeight
-		//sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 
 		// for a solid sphere:
@@ -189,31 +188,25 @@ function pGroup(apid, x, y, h, count) {
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 		
 		groups[apid].add(sprite);
-		//particleGroup.add( sprite );
+
 		// add variable qualities to arrays, if they need to be accessed later
 		particleAttributes.startPosition.push( sprite.position.clone() );
 		particleAttributes.randomness.push( Math.random() );
 	}
 
-	//particleGroup.position.x = x;
-	//particleGroup.position.y = y;
 	groups[apid].position.x = x;
 	groups[apid].position.y = y;
 	scene.add(groups[apid]);
-	//scene.add(particleGroup);
 }
-var currentlyDisplayedUUIDs = {};
+
 
 function resetGroups() {
 	for (var i in aps.rows) {
 		var id = aps.rows[i].id;
 		scene.remove(groups[id]);
 
-		//console.log(id)
 		for (var j in allSprites[id]) {
-			//console.log(allSprites[id])
-			//if (allSprites[id][j] != undefined)
-				removeSpriteFromAP(id);
+			removeSpriteFromAP(id);
 		}
 
 		for (var i in allPGroups)
@@ -221,26 +214,26 @@ function resetGroups() {
 
 		groups[id] = new THREE.Object3D();
 	}
-			for (var i in aps.rows) {
-				var ap = aps.rows[i];
-				var apid = ap.id;
-				var coords = ap.value;
-				if (coords.length === 0) continue;
-				var pos = coord2px(coords[0][0], coords[0][1]);
 
-				allPGroups[apid] = new THREE.Object3D();
-				allSprites[apid] = [];
-				allPGroups[apid].position.x = pos.x;
-				allPGroups[apid].position.y = pos.y;
-				scene.add(allPGroups[apid])
-			}
+	for (var i in aps.rows) {
+		var ap = aps.rows[i];
+		var apid = ap.id;
+		var coords = ap.value;
+		if (coords.length === 0) continue;
+		var pos = coord2px(coords[0][0], coords[0][1]);
+
+		allPGroups[apid] = new THREE.Object3D();
+		allSprites[apid] = [];
+		allPGroups[apid].position.x = pos.x;
+		allPGroups[apid].position.y = pos.y;
+		scene.add(allPGroups[apid])
+	}
 }
 
 
 function init() {
 	scene = new THREE.Scene();
-//	scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
-
+	//scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
 
 	var VIEW_ANGLE = 35, 
 		ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, 
@@ -252,10 +245,8 @@ function init() {
 	camera.rotation.set(0.5, 0.304, 0.424)
 	scene.add(camera);
 
-
 	renderer = new THREE.WebGLRenderer({ antialias: false,  clearAlpha: 1 });
 	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	//renderer.setClearColor("#fff", 1);
 
 	container = document.createElement( 'div' );
 	document.body.appendChild( container );
@@ -272,7 +263,6 @@ function init() {
 	scene.add(light);
 	*/
 
-
 	/* floor */
 	var material = new THREE.MeshBasicMaterial({
 		map: THREE.ImageUtils.loadTexture("map-simple.svg"),
@@ -284,10 +274,6 @@ function init() {
 	scene.add(meshCanvas);
 
 	resetGroups();
-
-	//displayEntireWeek();
-	//exampleSphere();
-
 
 	/* first build particleGroup for each ap and add that to the scene */
 	for (var i in aps.rows) {
@@ -306,62 +292,43 @@ function init() {
 
 	currentTS = startTS;
 
-	//displaySnapshot(startTS, startTS + snapshotDiff)
 	nextSnapshot();
 	int = setInterval("nextSnapshot()", 1000);
-
-	//setInterval("rm()", 1000);
 }
 
-var currentTS;
-var snapshotDiff = 60*60*60;
+
 function nextSnapshot() {
 	displaySnapshot(currentTS, currentTS + snapshotDiff)
 }
 
 
 /* add sprite, incl. fading in effect */
-var allSprites = {};
 function addSprite(apid) {
-	//var apid = log_entry.ap;
-	//console.log(log_entry)
-	//var pos = coord2px(coords[0][0], coords[0][1]);
-
-	//particle(log_entry.ap, pos.x, pos.y, h, oneWeek[id]);
-	//function particle(apid, x, y, h, count) {
-
 	if (allPGroups[apid] == undefined) allPGroups[apid] = new THREE.Object3D();
 	if (allSprites[apid] == undefined) allSprites[apid] = [];
 
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	particleAttributes = {startSize: [], startPosition: [], randomness: []};
 	
-	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
-		useScreenCoordinates: false, color: 0xffffff});
+	var spriteMaterial = new THREE.SpriteMaterial(
+		{map: particleTexture, useScreenCoordinates: false, color: 0xffffff});
 		
-		var h = 2;
+	var h = 2;
 
-		//console.log(allSprites)
+	var radiusRange = 2 * h;
+	radiusRange = (allSprites[apid].length * 2) % 50;
+	if (radiusRange === 0) radiusRange = 1;
 
-		var radiusRange = 2 * h;
-		radiusRange = (allSprites[apid].length * 2) % 50;
-		if (radiusRange === 0) radiusRange = 1;
-
-		var sprite = new THREE.Sprite(spriteMaterial);
-		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
-		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
-		sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
-		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
-		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
-
+	var sprite = new THREE.Sprite(spriteMaterial);
+	sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
+	sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
+	sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
+	sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+	//sprite.opacity = 0.40;
+	sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 
 	allPGroups[apid].add(sprite);
 	allSprites[apid].push(sprite);
-}
-
-
-function moveSprite(log_entry, old_ap, new_ap) {
-
 }
 
 
@@ -375,9 +342,7 @@ function removeSprite(log_entry) {
 
 
 function removeSpriteFromAP(ap) {
-	//console.log(ap)
 	var sprite = allSprites[ap].pop();
-
 	allPGroups[ap].remove(sprite);
 }
 
@@ -397,59 +362,12 @@ function rm() {
 
 function animate() {
 	requestAnimationFrame(animate);
-	render();		
-	update();
-}
-
-
-function update() {
-	/*
-	var time = 4 * 1;
-	//var time = 4 * clock.getElapsedTime();
-	
-	for ( var c = 0; c < particleGroup.children.length; c ++ ) 
-	{
-		var sprite = particleGroup.children[ c ];
-
-		// particle wiggle
-		// var wiggleScale = 2;
-		// sprite.position.x += wiggleScale * (Math.random() - 0.5);
-		// sprite.position.y += wiggleScale * (Math.random() - 0.5);
-		// sprite.position.z += wiggleScale * (Math.random() - 0.5);
-		
-		// pulse away/towards center
-		// individual rates of movement
-		var a = particleAttributes.randomness[c] + 1;
-		var pulseFactor = Math.sin(a * time) * 0.1 + 0.9;
-		sprite.position.x = particleAttributes.startPosition[c].x * pulseFactor;
-		sprite.position.y = particleAttributes.startPosition[c].y * pulseFactor;
-		sprite.position.z = particleAttributes.startPosition[c].z * pulseFactor;	
-	}
-
-	// rotate the entire group
-	// particleGroup.rotation.x = time * 0.5;
-	particleGroup.rotation.y = time * 0.75;
-	// particleGroup.rotation.z = time * 1.0;
-
-	if ( keyboard.pressed("z") ) 
-	{ 
-		// do something cool
-	}
-	*/
-	
+	renderer.render(scene, camera);
 	controls.update();
 }
 
 
-function render() {
-	renderer.render(scene, camera);
-}
-
-
 function exampleSphere() {
-	//var sphere = new THREE.Mesh(new THREE.SphereGeometry(60, 50, 50), material);
-	//var sphere = new THREE.Mesh(new THREE.SphereGeometry(30, 16, 16), shaderMaterial);
-	//var sphere = new THREE.Mesh(new THREE.Sphere(30, 16, 16), shaderMaterial);
 	var sphere = new THREE.Mesh(new THREE.SphereGeometry( 30, 30, 40), sphereMaterial);
 	sphere.overdraw = true;
 	var pos = coord2px(48.42484, 9.95309);
@@ -463,26 +381,31 @@ function exampleSphere() {
 }
 
 
+var inducedChange = false;
 function displaySnapshot(fstTS, sndTS) {
-	//particle(id, pos.x, pos.y, h, oneWeek[id]);
+	//$("#gui .string input[type=text]").attr("value", new Date(fstTS));
 
-	$("#gui input[type=text]").attr("value", new Date(fstTS));
+	inducedChange = true;
+	var d = new Date(fstTS);
+	var hours = (d.getHours() < 10) ? "0" + d.getHours() : d.getHours();
+	var mins = (d.getMinutes() < 10) ? "0" + d.getMinutes() : d.getMinutes();
+	ctrls.label.setValue(
+		days[d.getDay()] + ", "
+		+ d.getDate() + "." + (d.getMonth()+1) + "." 
+		+ d.getFullYear() + " " + hours + ":" + mins);
+
+	ctrls.hours.setValue(d.getHours());
+	ctrls.weekday.setValue(d.getDate() - (new Date(startTS).getDate()));
 
 	$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
-			//console.log(data);
-			//console.log(data.rows.length);
 			var rows = data.rows;
 
 			var newDisplays = {};
 			for (var i in rows) {
-				//console.log(rows)
 				var uuid = rows[i].value.uuid;
 				var p = rows[i]
 				var ap = rows[i].value.ap
-				//var pos = coord2px(aps[ap][0][0], p.coords[0][1]);
-
-				//particle(uuid, p.x, pos.y, h, 100);
 
 				// does a particle for this uuid already exist?
 				if (currentlyDisplayedUUIDs[uuid]) {
@@ -495,16 +418,12 @@ function displaySnapshot(fstTS, sndTS) {
 				} else {
 					// if not show up animation and save as displayed
 					addSprite(rows[i].value.ap);
-					//addSprite(rows[i].value);
 					newDisplays[uuid] = ap;
-					//console.log("added " + uuid + ", " + ap);
 				}
 			}
 
 			// what is the difference between the two objects?
 			// remove the difference
-			//console.log(newDisplays)
-			//console.log(currentlyDisplayedUUIDs)
 			for (var i in newDisplays) {
 				for (var i in currentlyDisplayedUUIDs) {
 					if (currentlyDisplayedUUIDs[i] === newDisplays[i]) {
@@ -514,18 +433,10 @@ function displaySnapshot(fstTS, sndTS) {
 				}
 			}
 
-			//console.log(currentlyDisplayedUUIDs)
-			//console.log("-----------------")
-			//console.log(newDisplays)
-			//console.log(currentlyDisplayedUUIDs)
-
 			// whats left now in the object is no longer displayed
 			for (var i in currentlyDisplayedUUIDs) {
-				//console.log(i)
-				//console.log(currentlyDisplayedUUIDs);
 				var ap = currentlyDisplayedUUIDs[i];
 				removeSpriteFromAP(ap)
-				//removeSprite(rows[i].value)
 			}
 
 			currentlyDisplayedUUIDs = newDisplays;
@@ -537,33 +448,25 @@ function displaySnapshot(fstTS, sndTS) {
 		startkey: fstTS,
 		endkey: sndTS,
 		reduce: false
-		/*
-		descending: false,
-		group: true,
-		group_level: 1
-		*/
 	});
 }
 
 
 function displayEntireWeek() {
-/*
-	var sphereMaterial = new THREE.MeshLambertMaterial(
-	{color: 0xFF0000, 
-	//transparent: true,
-	blending: THREE.AdditiveBlending});
-
-
+	/*
+	var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xFF0000, 
+		//transparent: true, 
+		blending: THREE.AdditiveBlending});
 	var shader = THREE.BasicShader;
 	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
 	//uniforms[ "tCube" ].value = textureCube;
 
 	var parameters = {fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader,
-	 transparent: true, 
-	 uniforms: uniforms, 
-	 blending: THREE.AdditiveBlending};
-	 //blending: THREE.NormalBlending};
+		transparent: true, 
+		uniforms: uniforms, 
+		blending: THREE.AdditiveBlending};
+		//blending: THREE.NormalBlending};
 
 	//var material = new THREE.MeshLambertMaterial( parameters);
 	var material = new THREE.ShaderMaterial( parameters);
@@ -573,7 +476,6 @@ function displayEntireWeek() {
 		var id = aps.rows[i].id;
 		var value = aps.rows[i].value;
 
-
 		if (value.length == 0) continue;
 
 		var h = oneWeek[id] * 0.0004;
@@ -581,12 +483,6 @@ function displayEntireWeek() {
 		//pGroup(id, pos.x, pos.y, h, oneWeek[id]);
 
 		particle(id, pos.x, pos.y, h, oneWeek[id]);
-
-/*
-		var a = oneWeek[id];
-		while (--a >= 0)
-			addSprite(id)
-			*/
 
 		/*
 		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 20, 20), sphereMaterial);
@@ -598,10 +494,6 @@ function displayEntireWeek() {
 		sphere.position.y = pos.y;
 		//scene.add(sphere);
 		*/
-
-		//if (i == 1) break;
-		//if (i == 120) break;
-		//break;
 	}
 }
 
