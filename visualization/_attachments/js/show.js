@@ -274,16 +274,19 @@ function init() {
 		, fog: false
 	});
 
-var uniforms = {
-    texture1: { type: "t", value: THREE.ImageUtils.loadTexture(
-    "map-simple.svg" ) }
-    };
+	var uniforms = {
+		texture1: {
+			type: "t", 
+			value: THREE.ImageUtils.loadTexture("map-simple.svg")
+		}
+	};
 
-	uniforms = { time: { type: "f", value: 1.0 }, resolution: { type: "v2", value: new THREE.Vector2() } };
+	//uniforms = {time: {type: "f", value: 1.0}, resolution: {type: "v2", value: new THREE.Vector2()}};
 
 	material = new THREE.ShaderMaterial({
-			vertexShader:   $('#vertexshader').text(),
-			fragmentShader: $('#fragmentshader').text()
+		uniforms: uniforms,
+		vertexShader: $('#vertexshader').text(),
+		fragmentShader: $('#fragmentshader').text()
 	});
 
 	var geometry = new THREE.PlaneGeometry(3074, 1782);
