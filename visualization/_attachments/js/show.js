@@ -11,6 +11,7 @@ var db_name = "uulm-networking";
 
 var FizzyText = function() {
   this.time = 12;
+  this.label = 'foo';
   this["display entire week"] = false;
   this.weekday = "Monday";
 };
@@ -18,24 +19,26 @@ var FizzyText = function() {
 var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
-var startTS = 1363958272000;
+var startTS = 1363302007000;
 //var startTS = 1363302000000;
 var endTS = 1363906800000;
 
 var particleGroup, particleAttributes;
 var groups = {};
 
+var ctrls = {};
 
 $(function() {
 	var text = new FizzyText();
 	var gui = new dat.GUI({ autoPlace: false, width: 295 });
 	document.getElementById("gui").appendChild(gui.domElement);
 
-	var weeks = gui.add(text, 'weekday', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] );
-	var time = gui.add(text, 'time', 0, 24);
-	var display_week = gui.add(text, 'display entire week');
+	ctrls.label = gui.add(text, 'label', 'foo');
+	ctrls.weeks = gui.add(text, 'weekday', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] );
+	ctrls.time = gui.add(text, 'time', 0, 24);
+	ctrls.display_week = gui.add(text, 'display entire week');
 
-	display_week.onChange(function(value) {
+	ctrls.display_week.onChange(function(value) {
 		resetGroups();
 		if (value) displayEntireWeek();
 	});
@@ -59,7 +62,7 @@ function particle(apid, x, y, h, count) {
 	var totalParticles = count;
 	//var totalParticles = 200;
 	var radiusRange = 2 * h;
-	console.log(totalParticles);
+	//console.log(totalParticles);
 	for( var i = 0; i < totalParticles; i++ ) {
 	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
 		useScreenCoordinates: false, color: 0xffffff});
@@ -169,8 +172,6 @@ function resetGroups() {
 
 
 function init() {
-
-
 	scene = new THREE.Scene();
 //	scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
 
@@ -218,16 +219,99 @@ function init() {
 
 	resetGroups();
 
-	displayEntireWeek();
+	//displayEntireWeek();
 	//exampleSphere();
-	//displaySnapshot(startTS, startTS + (60*20))
 
-	setInterval("rm()", 1000);
+
+	/* first build particleGroup for each ap and add that to the scene */
+	for (var i in aps.rows) {
+		var ap = aps.rows[i];
+		var apid = ap.id;
+		var coords = ap.value;
+		if (coords.length === 0) continue;
+		var pos = coord2px(coords[0][0], coords[0][1]);
+
+		allPGroups[apid] = new THREE.Object3D();
+		allSprites[apid] = [];
+		allPGroups[apid].position.x = pos.x;
+		allPGroups[apid].position.y = pos.y;
+		scene.add(allPGroups[apid])
+	}
+
+	currentTS = startTS;
+	//displaySnapshot(startTS, startTS + snapshotDiff)
+	nextSnapshot();
+	setInterval("nextSnapshot()", 1000);
+
+	//setInterval("rm()", 1000);
 }
+
+var currentTS;
+var snapshotDiff = 60*60*60;
+function nextSnapshot() {
+	displaySnapshot(currentTS, currentTS + snapshotDiff)
+}
+
+
+/* add sprite, incl. fading in effect */
+var allSprites = {};
+function addSprite(log_entry) {
+	//var coords = aps[ log_entry.ap ];
+	var apid = log_entry.ap;
+	//console.log(log_entry)
+	//var pos = coord2px(coords[0][0], coords[0][1]);
+
+	//particle(log_entry.ap, pos.x, pos.y, h, oneWeek[id]);
+	//function particle(apid, x, y, h, count) {
+
+	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
+	particleAttributes = {startSize: [], startPosition: [], randomness: []};
+	
+	    var spriteMaterial = new THREE.SpriteMaterial({ map: particleTexture, 
+		useScreenCoordinates: false, color: 0xffffff});
+		
+		var h = 2;
+		var radiusRange = 2 * h;
+		var sprite = new THREE.Sprite(spriteMaterial);
+		sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
+		sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
+		sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
+		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
+
+
+	if (allPGroups[apid] == undefined) allPGroups[apid] = new THREE.Object3D();
+	if (allSprites[apid] == undefined) allSprites[apid] = [];
+	allPGroups[apid].add(sprite);
+	allSprites[apid].push(sprite);
+}
+
+
+function moveSprite(log_entry, old_ap, new_ap) {
+
+}
+
+
+/* remove sprite, incl. fade out effect */
+function removeSprite(log_entry) {
+	var apid = log_entry.ap;
+	var sprite = allSprites[apid].pop();
+
+	allPGroups[apid].remove(sprite);
+}
+
+
+function removeSpriteFromAP(ap) {
+	//console.log(ap)
+	var sprite = allSprites[ap].pop();
+
+	allPGroups[ap].remove(sprite);
+}
+
 
 /* remove a random sprite */
 function rm() {
-	var i = 200;
+	var i = 50;
 
 	while (--i > 0) {
 		var sp = allSprites.pop();
@@ -236,8 +320,6 @@ function rm() {
 		}
 	}
 }
-
-
 
 
 function animate() {
@@ -311,35 +393,44 @@ function exampleSphere() {
 function displaySnapshot(fstTS, sndTS) {
 	//particle(id, pos.x, pos.y, h, oneWeek[id]);
 
+	$("#gui input[type=text]").attr("value", new Date(fstTS));
+
 	$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
-			console.log(data);
+			//console.log(data);
+			//console.log(data.rows.length);
 			var rows = data.rows;
 
 			var newDisplays = {};
 			for (var i in rows) {
-				var uuid = rows[i].uuid;
+				//console.log(rows)
+				var uuid = rows[i].value.uuid;
 				var p = rows[i]
 				var ap = rows[i].value.ap
-				var pos = coord2px(aps[ap][0][0], p.coords[0][1]);
-				particle(uuid, p.x, pos.y, h, 100);
+				//var pos = coord2px(aps[ap][0][0], p.coords[0][1]);
+
+				//particle(uuid, p.x, pos.y, h, 100);
 
 				// does a particle for this uuid already exist?
 				if (currentlyDisplayedUUIDs[uuid]) {
 
 					// if so has it changed the access point?
-					if (currentlyDisplayedUUIDs[uuid] != rows[i].ap) {
+					if (currentlyDisplayedUUIDs[uuid] != ap) {
 						// different ap!
 						// move ap to other group
 					}
+				} else {
+					// if not show up animation and save as displayed
+					addSprite(rows[i].value);
+					newDisplays[uuid] = ap;
+					//console.log("added " + uuid + ", " + ap);
 				}
-
-				// if not show up animation and save as displayed
-				newDisplays[uuid] = rows[i].ap;
 			}
 
 			// what is the difference between the two objects?
 			// remove the difference
+			//console.log(newDisplays)
+			//console.log(currentlyDisplayedUUIDs)
 			for (var i in newDisplays) {
 				for (var i in currentlyDisplayedUUIDs) {
 					if (currentlyDisplayedUUIDs[i] === newDisplays[i]) {
@@ -349,13 +440,22 @@ function displaySnapshot(fstTS, sndTS) {
 				}
 			}
 
+			//console.log(currentlyDisplayedUUIDs)
+			//console.log("-----------------")
+			//console.log(newDisplays)
+			//console.log(currentlyDisplayedUUIDs)
+
 			// whats left now in the object is no longer displayed
 			for (var i in currentlyDisplayedUUIDs) {
+				//console.log(i)
+				//console.log(currentlyDisplayedUUIDs);
 				var ap = currentlyDisplayedUUIDs[i];
-				//groups[ap].remove(
+				removeSpriteFromAP(ap)
+				//removeSprite(rows[i].value)
 			}
 
 			currentlyDisplayedUUIDs = newDisplays;
+			currentTS += snapshotDiff
 		},
 		error: function(status) {
 			console.log(status);
