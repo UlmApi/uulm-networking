@@ -279,6 +279,18 @@ function init() {
 			type: "t", 
 			value: THREE.ImageUtils.loadTexture("map-simple.svg")
 		}
+		, texHeight: {
+			type: "t", 
+			value: THREE.ImageUtils.loadTexture("height.png")
+		}
+		, texSpecular: {
+			type: "t", 
+			value: THREE.ImageUtils.loadTexture("specular.png")
+		}
+		, texNormal: {
+			type: "t", 
+			value: THREE.ImageUtils.loadTexture("normal.png")
+		}
 	};
 
 	//uniforms = {time: {type: "f", value: 1.0}, resolution: {type: "v2", value: new THREE.Vector2()}};

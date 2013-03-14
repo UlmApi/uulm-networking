@@ -82,14 +82,24 @@
 		precision highp float;
 		#endif
 
+
 		varying vec2 vUv;
+		varying vec3 vPosition;
+//varying vec3 normal;
 
 		void main() {
-			vUv = uv;
 
-			gl_Position =   projectionMatrix * 
-			modelViewMatrix * 
-			vec4(position,1.0);
+			vUv = uv;
+			vPosition = position;
+
+			gl_Position =   projectionMatrix * modelViewMatrix * vec4(position,1.0); // * vec4(1.0,1.0,1.0,1.0);
+
+//	normal = normalize(gl_NormalMatrix * gl_Normal);
+//	vec4 v = vec4(gl_Vertex);
+
+//	vPosition = v.xyz;
+//	gl_Position = ftransform();
+//	gl_TexCoord[0] = gl_MultiTexCoord0;
 		}
 	</script>
 
@@ -99,11 +109,57 @@
 		#endif
 
 		uniform sampler2D texture1;
+		uniform sampler2D texHeight;
+		uniform sampler2D texSpecular;
+		uniform sampler2D texNormal;
 
 		varying vec2 vUv;
+		varying vec3 vPosition;
+varying vec3 normal;
 
 		void main() {
-			gl_FragColor = texture2D(texture1, vUv);
+	vec3 pxHeight = texture2D(texHeight, vUv).rgb;
+			//vec4 pxHeight = texture2D(texture1, vUv).rgba;
+/*
+vec3 lightDir = vec3(0.025, 0.25, 1.0);
+//vec3 normal = vec3(1,1,1);
+	vec3 pxNormal = 2.0 * (texture2D(texNormal, vUv).rgb - vec3(0.5));
+
+	vec3 pxEarth = texture2D(texture1, vUv).rgb;
+	vec3 pxSpecular = texture2D(texSpecular, vUv).rgb;
+
+	vec3 lNormal	= normalize(normal + pxNormal);
+	float lDiffuse	= abs(dot(lNormal, lightDir));
+	float lSpecular = pow(lDiffuse, 100.0);
+
+	vec3 landFinal = pxEarth * pxHeight.g + lSpecular * pxHeight.g;
+	vec3 oceanFinal = pxEarth * pxSpecular.g + lSpecular * pxSpecular.g;
+
+gl_FragColor.rgb = landFinal + oceanFinal;
+gl_FragColor.a = 1.0;
+*/
+			//vec4 foo = texture2D(texture1, vUv);
+			//foo.r *= 0.1;
+ vec4 diffuseSand = vec4(.8, .8, .7, 1.0);
+	vec4 color = texture2D(texture1, vUv);
+
+//if ( color.r > 0.1  )
+//	color = vec4(0.37,0.37,0.37,1.0);
+//	color = vec4(1.0,1.0,1.0,1.0);
+
+/*
+      color = mix(
+            diffuseSand,
+            color,
+            min(abs(.0 - vPosition.x) / .9, 1.0) // Start at .6 for .6 units
+        );
+*/
+gl_FragColor = color;
+//gl_FragColor.rgb = pxHeight;
+//gl_FragColor.a = 1.0;
+        // 
+//			gl_FragColor = pxHeight;
+//			gl_FragColor = foo + pxHeight;
 		}
 	</script>
 
