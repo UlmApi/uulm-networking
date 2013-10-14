@@ -3,18 +3,15 @@ all: 	couchimport
 couchimport:
 	(cd ./couchdb-import && ./bulk-insert.sh > ./import.log)
 
-ouis:
-	echo "var ouis = {" > ouids.js
+ouids:
+	echo "var ouids = {" > ouids.js
 
 	cat ./oui.txt \
 		| grep "hex" \
 		| grep "Apple" \
 		| awk -F " " '{print $$1}' \
 		| sed -e "s/^/'/" \
-		| sed -e "s/$$/',/" \
-		| sed -e "$$ s/,/],/" \
-		| sed -e "1 s/'/apple: ['/" \
-		| tr -d "\n" \
+		| sed -e "s/$$/' : ouids_color.apple,/" \
 		>> ouids.js
 
 	echo "" >> ouids.js
@@ -24,10 +21,7 @@ ouis:
 		| grep "Samsung" \
 		| awk -F " " '{print $$1}' \
 		| sed -e "s/^/'/" \
-		| sed -e "s/$$/',/" \
-		| sed -e "$$ s/,/],/" \
-		| sed -e "1 s/'/samsung: ['/" \
-		| tr -d "\n" \
+		| sed -e "s/$$/' : ouids_color.samsung,/" \
 		>> ouids.js
 
 	echo "" >> ouids.js
@@ -37,11 +31,10 @@ ouis:
 		| grep "HTC" \
 		| awk -F " " '{print $$1}' \
 		| sed -e "s/^/'/" \
-		| sed -e "s/$$/',/" \
-		| sed -e "$$ s/,/]/" \
-		| sed -e "1 s/'/htc: ['/" \
-		| tr -d "\n" \
+		| sed -e "s/$$/' : ouids_color.htc,/" \
 		>> ouids.js
+
+	sed -i "$$ s/,$$//" ouids.js
 
 	echo "}" >> ouids.js
 

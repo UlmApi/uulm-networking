@@ -3,6 +3,13 @@ if (! Detector.webgl) Detector.addGetWebGLMessage();
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
+var ouids_color = {
+	"apple": 0xffffff
+	, "samsung": 0xff0000
+	, "htc": 0x00ff00
+	, "other": 0x0000ff
+};
+
 var container;
 var camera, scene, renderer, controls;
 
@@ -146,7 +153,10 @@ function particle(apid, x, y, h, count) {
 		sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
 		
 		// sprite.color.setRGB( Math.random(),  Math.random(),  Math.random() ); 
-		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		//sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		//sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		sprite.material.color.setHex(0x00ff00); 
+		//sprite.material.color.setRGB(255,0,0); 
 		
 		// sprite.opacity = 0.80; // translucent particles
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
@@ -165,6 +175,7 @@ function particle(apid, x, y, h, count) {
 
 
 function pGroup(apid, x, y, h, count) {
+return;
 	var particleTexture = THREE.ImageUtils.loadTexture('spark.png');
 	var totalParticles = count;
 	var radiusRange = 2 * h;
@@ -187,7 +198,9 @@ function pGroup(apid, x, y, h, count) {
 		sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
 		
 		// sprite.color.setRGB( Math.random(),  Math.random(),  Math.random() ); 
-		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		//sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		//sprite.material.color.setRGB(255,0,0); 
+		sprite.material.color.setHex(0x00ff00); 
 		
 		// sprite.opacity = 0.80; // translucent particles
 		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
@@ -352,7 +365,7 @@ function nextSnapshot() {
 
 
 /* add sprite, incl. fading in effect */
-function addSprite(apid) {
+function addSprite(apid, hexcolor) {
 	if (allPGroups[apid] == undefined) allPGroups[apid] = new THREE.Object3D();
 	if (allSprites[apid] == undefined) allSprites[apid] = [];
 
@@ -372,7 +385,10 @@ function addSprite(apid) {
 	sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
 	sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 	sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
-	sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+	//sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		//sprite.material.color.setRGB(255,0,0); 
+		//sprite.material.color.setHex(0x00ff00); 
+		sprite.material.color.setHex(hexcolor); 
 	//sprite.opacity = 0.40;
 	sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 
@@ -453,6 +469,7 @@ function displaySnapshot(fstTS, sndTS) {
 			var newDisplays = {};
 			for (var i in rows) {
 				var uuid = rows[i].value.uuid;
+				var ouid = rows[i].value.ouid;
 				//var p = rows[i];
 				var ap = rows[i].value.ap;
 
@@ -466,7 +483,7 @@ function displaySnapshot(fstTS, sndTS) {
 					}
 				} else {
 					// if not show up animation and save as displayed
-					addSprite(rows[i].value.ap);
+					addSprite(rows[i].value.ap, getColorFromOUID(ouid));
 					newDisplays[uuid] = ap;
 				}
 			}
@@ -502,25 +519,6 @@ function displaySnapshot(fstTS, sndTS) {
 
 
 function displayEntireWeek() {
-	/*
-	var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xFF0000, 
-		//transparent: true, 
-		blending: THREE.AdditiveBlending});
-	var shader = THREE.BasicShader;
-	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-	//uniforms[ "tCube" ].value = textureCube;
-
-	var parameters = {fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader,
-		transparent: true, 
-		uniforms: uniforms, 
-		blending: THREE.AdditiveBlending};
-		//blending: THREE.NormalBlending};
-
-	//var material = new THREE.MeshLambertMaterial( parameters);
-	var material = new THREE.ShaderMaterial( parameters);
-	*/
-
 	for (var i in aps.rows) {
 		var id = aps.rows[i].id;
 		var value = aps.rows[i].value;
@@ -529,20 +527,9 @@ function displayEntireWeek() {
 
 		var h = oneWeek[id] * 0.0004;
 		var pos = coord2px(value[0][0], value[0][1]);
+
 		//pGroup(id, pos.x, pos.y, h, oneWeek[id]);
-
 		particle(id, pos.x, pos.y, h, oneWeek[id]);
-
-		/*
-		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 20, 20), sphereMaterial);
-		//var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 40, 40), material);
-		var sphere = new THREE.Mesh(new THREE.SphereGeometry(20*h, 16, 16), material);
-
-	        sphere.overdraw = true;
-		sphere.position.x = pos.x;
-		sphere.position.y = pos.y;
-		//scene.add(sphere);
-		*/
 	}
 }
 
@@ -573,3 +560,15 @@ function coord2px(lat, lon) {
 
 	return {x: coordX, y: coordY};
 }
+
+function getColorFromOUID(ouid) {
+	ouid = ouid.toUpperCase().replace(/:/g, "-");
+
+	//console.log(ouid);
+
+	if (ouids[ouid] != undefined) 
+		return ouids[ouid];
+
+	return ouids_color.other;
+}
+

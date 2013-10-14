@@ -4,6 +4,7 @@ function(doc) {
 	var foo = {
 		uuid: doc.uuid
 		, ap: doc.ap
+		, ouid: doc.ouid
 	}
 
 	emit(doc.time, foo);
