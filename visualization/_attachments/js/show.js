@@ -59,13 +59,11 @@ var snapshotDiff = 60*60*60;
 or because the change was induced by code */
 var inducedChange = false;
 
-var mesh2;
-
 
 $(function() {
 	var text = new FizzyText();
 	var gui = new dat.GUI({ autoPlace: false, width: 295});
-	document.getElementById("gui").appendChild(gui.domElement);
+	$("#gui").append(gui.domElement);
 
 	ctrls.label = gui.add(text, 'label', 'foo');
 	ctrls.weekday = gui.add(text, 'weekday', week_arr);
@@ -242,13 +240,13 @@ function init() {
 	scene = new THREE.Scene();
 	//scene.fog = new THREE.FogExp2( 0x000000, 0.0009 );
 
-	var VIEW_ANGLE = 35, 
-		ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, 
-		NEAR = 1, FAR = 5000;
+	var VIEW_ANGLE = 35
+	    , ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT
+	    , NEAR = 1, FAR = 5000;
 	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
-	
-	camera.position.set(400, -1307, 2352)
+	//camera.position.set(400, -1307, 2352)
+	camera.position.set(1000, -1350, 2400)
 	camera.up.set(-0.858, 1.62, 1.32)
 	camera.rotation.set(0.5, 0.304, 0.424)
 
@@ -263,7 +261,7 @@ function init() {
 	renderer = new THREE.WebGLRenderer({ antialias: false,  clearAlpha: 1 });
 	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	container = document.createElement( 'div' );
+	container = document.createElement('div');
 	document.body.appendChild( container );
 	container.appendChild(renderer.domElement);
 
@@ -312,9 +310,9 @@ function init() {
 	//uniforms = {time: {type: "f", value: 1.0}, resolution: {type: "v2", value: new THREE.Vector2()}};
 
 	material = new THREE.ShaderMaterial({
-		uniforms: uniforms,
-		vertexShader: $('#vertexshader').text(),
-		fragmentShader: $('#fragmentshader').text()
+		uniforms: uniforms
+		, vertexShader: $('#vertexshader').text()
+		, fragmentShader: $('#fragmentshader').text()
 		, transparent: true
 		, opacity: 0.1
 	});
@@ -322,11 +320,6 @@ function init() {
 	var geometry = new THREE.PlaneGeometry(3074, 1782);
 	var meshCanvas = new THREE.Mesh(geometry, material);
 	scene.add(meshCanvas);
-
-	//mesh2 = new THREE.Mesh(geometry, material);
-	//mesh2 = new THREE.Mesh(geometry, material_floor);
-	//mesh2.position.set(100,100,100);
-	//scene.add(mesh2);
 
 	resetGroups();
 
@@ -453,6 +446,7 @@ function displaySnapshot(fstTS, sndTS) {
 	ctrls.weekday.setValue(d.getDate() - (new Date(startTS).getDate()));
 
 	$.couch.db(db_name).view("visualization/time_compact", {
+	//$.couch.db(db_name).view("visualization/time", {
 		success: function(data) {
 			var rows = data.rows;
 
