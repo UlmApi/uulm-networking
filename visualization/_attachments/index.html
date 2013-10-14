@@ -15,8 +15,8 @@
 
 	<link rel="stylesheet" href="./css/style.css">	
 
-	<script src="js/three.min.js"></script>
 	<script src="js/threejs/Detector.js"></script>
+	<script src="js/three.min.js"></script>
 	<script src="js/threejs/controls/TrackballControls.js"></script>
 	<script src="js/threejs/THREEx.KeyboardState.js"></script>
 	<script src="js/threejs/THREEx.FullScreen.js"></script>
@@ -28,6 +28,10 @@
 	<script src="./js/show.js"></script>
 
 	<script src="./js/threejs/libs/tween.min.js"></script>
+
+	<!-- jquery fancybox -->
+	<script type="text/javascript" src="./js/fancybox/jquery.fancybox.js"></script>
+	<link rel="stylesheet" href="./js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 </head>
 <body>
 
@@ -40,8 +44,11 @@
 	<img src="./img/uulm.png" alt="" class="uulmlogo" />
 
 	<div class="logos">
-		<a href="javascript:dialog()"><img width="45" src="./img/logos-large/ulmapi.png" alt="ulmapi"
-			title="Informationen zu diesem Projekt" /></a>
+		<a class="fancybox" href="#dialog">
+			<img 
+				width="45" src="./img/logos-large/ulmapi.png" alt="ulmapi"
+				title="Informationen zu diesem Projekt" />
+		</a>
 	</div>
 
 	<div id="dialog" title="uulm Network Visualization">
@@ -143,7 +150,13 @@ gl_FragColor.a = 1.0;
  vec4 diffuseSand = vec4(.8, .8, .7, 1.0);
 	vec4 color = texture2D(texture1, vUv);
 
-//if ( color.r > 0.1  )
+if ( color.r == 0.0 && color.g == 0.0) {
+//	color.a = 0.1;
+//	color.r = 1.0;
+	color = vec4(0.0, 0.0, 0.0, 0.0);
+} else {
+	color.a = 0.6;
+}
 //	color = vec4(0.37,0.37,0.37,1.0);
 //	color = vec4(1.0,1.0,1.0,1.0);
 

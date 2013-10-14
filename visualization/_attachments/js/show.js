@@ -1,4 +1,4 @@
-if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+if (! Detector.webgl) Detector.addGetWebGLMessage();
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
@@ -14,13 +14,13 @@ var endTS = 1363906800000;
 var int;
 
 var FizzyText = function() {
-  this.hours = new Date(startTS).getHours();
-  this.label = 'foo';
-  this["display entire week"] = false;
-  this.weekday = "0";
+	this.hours = new Date(startTS).getHours();
+	this.label = 'foo';
+	this["display entire week"] = false;
+	this.weekday = "0";
 };
 
-var clock = new THREE.Clock();
+//var clock = new THREE.Clock();
 var keyboard = new THREEx.KeyboardState();
 
 var particleGroup, particleAttributes;
@@ -58,6 +58,8 @@ var snapshotDiff = 60*60*60;
 /* when an onChange event is fired: was it because the user did change sth,
 or because the change was induced by code */
 var inducedChange = false;
+
+var mesh2;
 
 
 $(function() {
@@ -118,6 +120,7 @@ $(function() {
 
 	init();
 	animate();
+	$('.fancybox').fancybox();
 });
 
 
@@ -244,9 +247,17 @@ function init() {
 		NEAR = 1, FAR = 5000;
 	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
+	
 	camera.position.set(400, -1307, 2352)
 	camera.up.set(-0.858, 1.62, 1.32)
 	camera.rotation.set(0.5, 0.304, 0.424)
+
+	/*
+	camera.position.set(1282, -1976, 1359)
+	camera.up.set(-0.34, 0.86, 2.057)
+	camera.rotation.set(0.96, 0.49, 0.23)
+	*/
+
 	scene.add(camera);
 
 	renderer = new THREE.WebGLRenderer({ antialias: false,  clearAlpha: 1 });
@@ -256,7 +267,8 @@ function init() {
 	document.body.appendChild( container );
 	container.appendChild(renderer.domElement);
 
-	controls = new THREE.TrackballControls(camera, renderer.domElement);
+	/* enable this so that users can fly around using their mouse */
+	//controls = new THREE.TrackballControls(camera, renderer.domElement);
 
 	THREEx.WindowResize(renderer, camera);
 	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
@@ -268,15 +280,19 @@ function init() {
 	*/
 
 	/* floor */
-	var material = new THREE.MeshBasicMaterial({
-		map: THREE.ImageUtils.loadTexture("map-simple.svg")
+	var material_floor = new THREE.MeshBasicMaterial({
+		map: THREE.ImageUtils.loadTexture("map-transparent.png")
+		//map: THREE.ImageUtils.loadTexture("map-simple.svg")
 		//, new THREE.SphericalReflectionMapping()),
+		, transparent: true
+		//, opacity: 0.1
 		, fog: false
 	});
 
 	var uniforms = {
 		texture1: {
 			type: "t", 
+			//value: THREE.ImageUtils.loadTexture("map-transparent.png")
 			value: THREE.ImageUtils.loadTexture("map-simple.svg")
 		}
 		, texHeight: {
@@ -299,11 +315,18 @@ function init() {
 		uniforms: uniforms,
 		vertexShader: $('#vertexshader').text(),
 		fragmentShader: $('#fragmentshader').text()
+		, transparent: true
+		, opacity: 0.1
 	});
 
 	var geometry = new THREE.PlaneGeometry(3074, 1782);
 	var meshCanvas = new THREE.Mesh(geometry, material);
 	scene.add(meshCanvas);
+
+	//mesh2 = new THREE.Mesh(geometry, material);
+	//mesh2 = new THREE.Mesh(geometry, material_floor);
+	//mesh2.position.set(100,100,100);
+	//scene.add(mesh2);
 
 	resetGroups();
 
@@ -326,6 +349,7 @@ function init() {
 
 	nextSnapshot();
 	int = setInterval("nextSnapshot()", 1000);
+	//int = setInterval("nextSnapshot()", 1000);
 }
 
 
@@ -395,7 +419,7 @@ function rm() {
 function animate() {
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
-	controls.update();
+	//controls.update();
 }
 
 
@@ -428,15 +452,15 @@ function displaySnapshot(fstTS, sndTS) {
 	inducedChange = true;
 	ctrls.weekday.setValue(d.getDate() - (new Date(startTS).getDate()));
 
-	$.couch.db(db_name).view("visualization/time", {
+	$.couch.db(db_name).view("visualization/time_compact", {
 		success: function(data) {
 			var rows = data.rows;
 
 			var newDisplays = {};
 			for (var i in rows) {
 				var uuid = rows[i].value.uuid;
-				var p = rows[i]
-				var ap = rows[i].value.ap
+				//var p = rows[i];
+				var ap = rows[i].value.ap;
 
 				// does a particle for this uuid already exist?
 				if (currentlyDisplayedUUIDs[uuid]) {

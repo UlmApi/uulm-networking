@@ -104,34 +104,47 @@ html, body, #map {
 	z-index:99;
 }
 
-.logos img, #dialog-confirm div img {
+
+.logos img, #dialog div img {
 	border:1px solid #000;
 }
 
-.logos img:hover, #dialog-confirm div img {
+.logos img:hover, #dialog div img {
 	border:1px solid #7D9AAA;
 }
 
-#dialog-confirm {
+#dialog {
 	font-size: 0.8em;
 	font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
 	color: #222;
 	display: none;
+	width: 500px;
+	height: 300px;
 }
 
-#dialog-confirm a {
+#dialog p a {
 	color: #0078A8;
 }
 
-#dialog-confirm .bottom {
-	float:right; 
-	text-align:right;
-	/* font-size:0.8em */
+#dialog .bottom-left {
+	float:left; 
+	text-align:left;
+	position: absolute;
+	bottom: 30px;
 }
 
-#dialog-confirm .bottom a {
+#dialog .bottom-right {
+	float:right; 
+	text-align:right;
+	position: absolute;
+	bottom: 20px;
+	right:25px;
+}
+
+#dialog .bottom a {
 	/* font-size: 0.8em; */
 }
+
 
 .legend img {
 	margin-top: 4px;
