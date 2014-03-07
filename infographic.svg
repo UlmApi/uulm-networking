@@ -59,9 +59,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.56844756"
-     inkscape:cx="590.4387"
-     inkscape:cy="359.81483"
+     inkscape:zoom="1.1368951"
+     inkscape:cx="519.65288"
+     inkscape:cy="287.12197"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -97,7 +97,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -747,11 +747,7 @@
          sodipodi:role="line"
          x="338.29968"
          y="923.22339"
-         id="tspan5027">Source &amp; Data: https://github.com/UlmApi/uulm-networking</tspan><tspan
-         sodipodi:role="line"
-         x="338.29968"
-         y="940.72339"
-         id="tspan5031" /></text>
+         id="tspan5031">Source &amp; Data: http://ulmAPI.de</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3353"

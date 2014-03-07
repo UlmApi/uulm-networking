@@ -4,9 +4,9 @@ var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
 var ouids_color = {
-	"apple": 0xffffff
+	"apple": 0xff0000
 	, "samsung": 0xff0000
-	, "htc": 0x00ff00
+	, "htc": 0xff0000
 	, "other": 0x0000ff
 };
 
@@ -385,11 +385,12 @@ function addSprite(apid, hexcolor) {
 	sprite.scale.set( h*32, h*32, 1.0 ); // imageWidth, imageHeight
 	sprite.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 	sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
+
 	//sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
-		//sprite.material.color.setRGB(255,0,0); 
-		//sprite.material.color.setHex(0x00ff00); 
-		sprite.material.color.setHex(hexcolor); 
-	//sprite.opacity = 0.40;
+	//sprite.material.color.setRGB(255,0,0); 
+	//sprite.material.color.setHex(0x00ff00); 
+	sprite.material.color.setHex(hexcolor); 
+	//sprite.opacity = 0.20;
 	sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
 
 	allPGroups[apid].add(sprite);
