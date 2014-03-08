@@ -59,9 +59,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.1368951"
-     inkscape:cx="519.65288"
-     inkscape:cy="287.12197"
+     inkscape:zoom="1.6078125"
+     inkscape:cx="574.6699"
+     inkscape:cy="356.04208"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -88,6 +88,10 @@
        orientation="1,0"
        position="1018.5636,2.6387658"
        id="guide3158" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="721.47716,64.062196"
+       id="guide3424" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -612,7 +616,7 @@
     <g
        inkscape:label="Layer 1"
        id="layer1-7"
-       transform="matrix(1.0987711,0,0,1.0987711,805.09164,971.37099)">
+       transform="matrix(0.92823285,0,0,0.92823285,818.09895,978.5336)">
       <g
          id="g2396"
          transform="matrix(0.733333,0,0,0.738095,-7.88725e-5,11)">
@@ -712,13 +716,13 @@
        sodipodi:linespacing="125%"
        id="text3265"
        y="998.84784"
-       x="787.02252"
+       x="809.02252"
        style="font-size:13px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
        xml:space="preserve"><tspan
          style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;text-anchor:end;fill:#ffffff;font-family:LMMono10;-inkscape-font-specification:LMMono10"
          id="tspan5141"
          y="998.84784"
-         x="787.02252"
+         x="809.02252"
          sodipodi:role="line"><tspan
            id="tspan5097"
            style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;text-anchor:end;fill:#ffffff;font-family:LMSans10;-inkscape-font-specification:LMSans10">Michael Müller, http://m</tspan><tspan
@@ -726,13 +730,13 @@
            id="tspan6351">icha.elmueller.net</tspan></tspan><tspan
          style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;text-anchor:end;fill:#ffffff;font-family:LMSans10;-inkscape-font-specification:LMSans10"
          y="1016.3478"
-         x="791.6983"
+         x="813.6983"
          sodipodi:role="line"
          id="tspan5009">License: Creative Commons Attribution 4.0 Unported </tspan></text>
     <text
        xml:space="preserve"
        style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
-       x="338.29968"
+       x="545.00739"
        y="888.22339"
        id="text5021"
        sodipodi:linespacing="125%"><tspan
@@ -743,20 +747,22 @@
          sodipodi:role="line"
          x="338.29968"
          y="905.72339"
-         id="tspan5025">526 359 access point log entries of one week university life (Fri to Fri).</tspan><tspan
+         id="tspan5025"
+         style="text-anchor:middle;text-align:center">526 359 access point log entries of one week university life (Fri to Fri).</tspan><tspan
          sodipodi:role="line"
          x="338.29968"
          y="923.22339"
-         id="tspan5031">Source &amp; Data: http://ulmAPI.de</tspan></text>
+         id="tspan5031"
+         style="text-anchor:middle;text-align:center">Source &amp; Data: http://ulmAPI.de</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3353"
-       y="371.47626"
+       y="379.47626"
        x="526.68658"
        style="font-size:43px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
        xml:space="preserve"><tspan
          style="font-size:39px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;font-family:LMSans10;-inkscape-font-specification:LMSans10"
-         y="371.47626"
+         y="379.47626"
          x="526.68658"
          sodipodi:role="line"
          id="tspan5337">One week of wireless interaction at the University of Ulm</tspan></text>

@@ -11,12 +11,25 @@ couchapp/       Web application for crowd-sourcing the process of
                 collecting geolocation for the access points
 ```
 
-[http://localhost:5984/uulm-networking/_design/visualization/index.html]
+# Visualization
+
+Static visualization:
+
+![visualization](https://raw.github.com/UlmApi/uulm-networking/master/infographic.svg)
+
+
+Also I created an animated live visualization, which enables you to view
+the load at certain times. This is a web application based on the THREE.js
+framework. However, it is slow and needs to be optimized.
+The application has been created as a CouchApp and you need to follow the
+instructions below, to get it running. It is then accessible via your
+browser at the URI 
+[http://localhost:5984/uulm-networking/_design/visualization/index.html].
 
 
 # ToDo
 
- * Geolocations for all Access Points have to be added
+ * Geolocations for all Access Points have to be added as a database file
 
 
 # Data
