@@ -15,7 +15,7 @@ couchapp/       Web application for crowd-sourcing the process of
 
 Static visualization:
 
-![visualization](http://micha.elmueller.net/media/infographic.png)
+[![visualization](http://micha.elmueller.net/media/infographic.png)](http://micha.elmueller.net/media/infographic.png)
 
 
 Also I created an animated live visualization, which enables you to view
@@ -59,7 +59,7 @@ aea-5-ap1.rz.uni-ulm.de	"Albert-Einstein-Allee 5 | Pavillon | Seminarraum"
 ```
 
 
-# Import into CouchDB
+# Import data into CouchDB
 
 Make sure the files `./data/wlan-client-authlog.anon` and `./data/access-points-desc.asc`
 exist!
@@ -67,6 +67,8 @@ Install [CouchDB](http://couchdb.apache.org/) and create a new database `uulm-ne
 e.g. by using [http://localhost:5984/_utils/](http://localhost:5984/_utils/).
 
 ```
+$ pwd 
+uulm-networking/
 $ cd ./data/
 $ make couchimport
 $ make clean
@@ -74,6 +76,18 @@ $ make clean
 
 You should now have 526359 rows in your database.
 
+
+# Import visualization into CouchDB
+
+```
+$ pwd 
+uulm-networking/
+cd ./visualization/
+make push
+```
+
+Access the frontend via 
+[http://localhost:5984/uulm-networking/_design/visualization/index.html](http://localhost:5984/uulm-networking/_design/visualization/index.html).
 
 # License 
 
