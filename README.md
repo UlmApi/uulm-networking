@@ -15,7 +15,7 @@ couchapp/       Web application for crowd-sourcing the process of
 
 Static visualization:
 
-![visualization](http://micha.elmueller.net/media/infographic.svg)
+![visualization](http://micha.elmueller.net/media/infographic.png)
 
 
 Also I created an animated live visualization, which enables you to view
