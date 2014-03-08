@@ -15,7 +15,7 @@ couchapp/       Web application for crowd-sourcing the process of
 
 Static visualization:
 
-![visualization](https://raw.github.com/UlmApi/uulm-networking/master/infographic.svg)
+![visualization](http://micha.elmueller.net/media/infographic.svg)
 
 
 Also I created an animated live visualization, which enables you to view
@@ -24,7 +24,7 @@ framework. However, it is slow and needs to be optimized.
 The application has been created as a CouchApp and you need to follow the
 instructions below, to get it running. It is then accessible via your
 browser at the URI 
-[http://localhost:5984/uulm-networking/_design/visualization/index.html].
+[http://localhost:5984/uulm-networking/_design/visualization/index.html](http://localhost:5984/uulm-networking/_design/visualization/index.html).
 
 
 # ToDo
