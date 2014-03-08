@@ -11,7 +11,7 @@ couchapp/       Web application for crowd-sourcing the process of
                 collecting geolocation for the access points
 ```
 
-http://localhost:5984/uulm-networking/_design/visualization/index.html
+[http://localhost:5984/uulm-networking/_design/visualization/index.html]
 
 
 # ToDo
@@ -77,7 +77,7 @@ Data:
 
 The code is licensed under the MIT license:
 
-	Copyright (c) 2013
+	Copyright (c) 2013-2014
 
 		Michael Mueller <http://micha.elmueller.net/>
 
