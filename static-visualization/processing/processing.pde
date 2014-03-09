@@ -14,7 +14,7 @@ void setup() {
   strokeWeight(1);
   background(25);
   background(0);
-  
+ 
   PImage img;
   //img = loadImage("./map-simple.png");
   img = loadImage("./map.png");
@@ -24,6 +24,9 @@ translate(150, 0, 0);
 //rotateY(PI/6);
 pushMatrix();
   //translate(50, 50);
+ 
+ ambientLight(127, 150, 164);
+ directionalLight(width/2, height/2, 150, -1, 0, 0);
   image(img, 0, 0);
 
 /*
@@ -75,7 +78,7 @@ r = total * 0.0009;
 
 if (r < 2.0) r = 2.0;
 if (alph < 200.0) alph = 200.0;
-
+alph = 250.0;
 
 //println("total: " + total + ", alph: " + alph + ", r: " + r);
 //println(alph);
@@ -83,6 +86,8 @@ if (alph < 200.0) alph = 200.0;
   //fill(0xff0000, );
   noStroke();
   fill(255, 0, 0, alph);
+  fill(#DA1C5C, alph);
+  fill(#ffffff, alph);
   //stroke(255 , 0, 0);
 pushMatrix();
 translate(px[0], px[1]);
