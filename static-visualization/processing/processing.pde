@@ -5,15 +5,21 @@ int min = 0;
 
 void setup() {
   //size(700, 700, P3D);
-  size(700, 700);
+  size(900, 522);
   smooth();
   noFill();
  
   stroke(255, 0, 0);
   strokeWeight(1);
   background(25);
+  
+  PImage img;
+  //img = loadImage("./map-simple.png");
+  img = loadImage("./map.png");
 
-  translate(50, 50);
+  //translate(50, 50);
+  image(img, 0, 0);
+
 /*
 
   JSONArray values = loadJSONArray("entire_data.json");
@@ -59,10 +65,10 @@ float alph = 255.0 * (total/max);
 float r = 10.0 - (10.0/(total*0.01));
 
 alph = ((float(total)/float(max)) * 255.0);
-r = total * 0.002;
+r = total * 0.0009;
 
-if (r < 3.0) r = 3.0;
-if (alph < 50.0) alph = 50.0;
+if (r < 5.0) r = 5.0;
+if (alph < 70.0) alph = 70.0;
 
 
 //println("total: " + total + ", alph: " + alph + ", r: " + r);
@@ -129,20 +135,23 @@ int[] coord2px(float lat, float lon) {
         float bbHeight = bbTop - bbBottom;
         float bbWidth = bbRight - bbLeft;
 
-        int imgWidth = 600;
-        int imgHeight = 600;
+        int imgWidth = 900;
+        int imgHeight = 522;
 
         int shiftX = -10;
         int shiftY = -600;
 
-        int coordX = int(((imgWidth / bbWidth) * (lon - bbLeft)) + shiftX);
-        int coordY = int(((imgHeight / bbHeight) * (bbTop - lat)) + shiftY);
-        coordY *= -1;
+shiftX = 0;
+shiftY = 0;
+
+        float coordX = ((imgWidth / bbWidth) * (lon - bbLeft)) + shiftX;
+        float coordY = ((imgHeight / bbHeight) * (bbTop - lat)) + shiftY;
+        //coordY *= -1;
 
         //return {x: coordX, y: coordY};
         int foo[] = new int[2];
-        foo[0] = coordX;
-        foo[1] = coordY;
+        foo[0] = int(coordX);
+        foo[1] = int(coordY);
         
         return foo;
 }
