@@ -4,19 +4,25 @@ int max = 0;
 int min = 0;
 
 void setup() {
-  //size(700, 700, P3D);
-  size(900, 522);
+  //size(900, 522, P3D);
+  size(1200, 800, P3D);
+ // size(900, 522);
   smooth();
   noFill();
  
   stroke(255, 0, 0);
   strokeWeight(1);
   background(25);
+  background(0);
   
   PImage img;
   //img = loadImage("./map-simple.png");
   img = loadImage("./map.png");
-
+rotateX(PI/8);
+translate(0, 0, -150);
+translate(150, 0, 0);
+//rotateY(PI/6);
+pushMatrix();
   //translate(50, 50);
   image(img, 0, 0);
 
@@ -67,8 +73,8 @@ float r = 10.0 - (10.0/(total*0.01));
 alph = ((float(total)/float(max)) * 255.0);
 r = total * 0.0009;
 
-if (r < 5.0) r = 5.0;
-if (alph < 70.0) alph = 70.0;
+if (r < 2.0) r = 2.0;
+if (alph < 200.0) alph = 200.0;
 
 
 //println("total: " + total + ", alph: " + alph + ", r: " + r);
@@ -78,10 +84,12 @@ if (alph < 70.0) alph = 70.0;
   noStroke();
   fill(255, 0, 0, alph);
   //stroke(255 , 0, 0);
-//translate(px[0], px[1]);
-//sphere(10);
-//ellipse(px[0], px[1], 5, 5);
-ellipse(px[0], px[1], r, r);
+pushMatrix();
+translate(px[0], px[1]);
+sphere(r);
+popMatrix();
+
+//ellipse(px[0], px[1], r, r);
 
       //strokeWeight(1);
       //float alph = 1.0 + (float(maxmin[0]) / float(trips));
@@ -91,7 +99,7 @@ ellipse(px[0], px[1], r, r);
      //   stroke(255, 0,0, 1.0);
   }
     popMatrix();
-
+popMatrix();
   //save("../output/" + city + "/out.png"); 
 }
 
