@@ -2,6 +2,7 @@ import java.util.Arrays;
 
 int max = 0;
 int min = 0;
+PShader texShader;
 
 void setup() {
   size(1200, 800, P3D);
@@ -10,25 +11,30 @@ void setup() {
  
   stroke(255, 0, 0);
   strokeWeight(1);
-  background(25);
+  //background(#1a1a1a);
+  //background(#131617);
   background(0);
+  
+  texShader = loadShader("texfrag.glsl", "texvert.glsl");
+  shader(texShader);  
  
   PImage img;
   img = loadImage("./map.png");
 
-  rotateX(PI/8);
+  rotateX(PI/4);
   translate(0, 0, -150);
-  translate(150, 0, 0);
+  translate(220, 0, 0);
+  translate(0, 120, 0);
 
   pushMatrix();
  
   ambientLight(127, 150, 164);
+  //ambientLight(218, 28, 92);
   directionalLight(width/2, height/2, 150, -1, 0, 0);
 
   image(img, 0, 0);
 
-/*
-
+  /*
   JSONArray values = loadJSONArray("entire_data.json");
   
   for (int i = 0; i < values.size(); i++) {
@@ -41,7 +47,7 @@ void setup() {
   
   println("max: " + max);
   println("min: " + min);
-*/
+  */
   
   int max = 9134;
   int min = 0;
@@ -81,17 +87,19 @@ void setup() {
     noStroke();
     fill(255, 0, 0, alph);
     fill(#DA1C5C, alph);
-    fill(#ffffff, alph);
+    //fill(#ffffff, alph);
+    //fill(#FFAAFF, alph);
 
     pushMatrix();
       translate(px[0], px[1]);
       sphere(r);
+      //box(5, 5, r*13);
     popMatrix();
   }
   popMatrix();
   popMatrix();
 
-  //save("../output/" + city + "/out.png"); 
+  save("./out.png"); 
 }
 
 void draw() { }
@@ -106,7 +114,7 @@ int getForAP(String alias) {
 
     JSONArray key = entry.getJSONArray("key"); 
     String ap_alias = key.getString(0);
-    String orga = key.getString(1);
+       String orga = key.getString(1);
 
     if (ap_alias.equals(alias)) 
       total += value;
